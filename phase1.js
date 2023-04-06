@@ -12,40 +12,95 @@ app.use(express.urlencoded({ extended: true }));
 
 // Define routes
 //rest makes it more specific to the 'ticket' resourse
-app.get('/rest/tickets', async (req, res) => {
-  const tickets = await Ticket.find();
-  //const myquery = req.query;
-  var outstring = 'Starting... ';
-  res.send(outstring);
-  //res.json(tickets);
-});
+// app.get('/rest/tickets', async (req, res) => {
+//   const tickets = await Ticket.find();
+//   //const myquery = req.query;
+//   var outstring = 'Starting... ';
+//   res.send(outstring);
+//   //res.json(tickets);
+// });
+// app.get('/rest/ticket', (req, res) => {
+//   res.json(tickets);
+// });
 
-app.post('/rest/tickets', async (req, res) => {
-  const ticket = new Ticket(req.body);
-  await ticket.save();
+
+// app.post('/rest/tickets', async (req, res) => {
+//   const ticket = new Ticket(req.body);
+//   const user_id = req.body.id;
+//   const token = req.body.token;
+//   await ticket.save();
+// });
+app.post('/rest/ticket', (req, res) => {
+  const ticket = req.body;
+  ticket.id = tickets.length + 1;
+  tickets.push(ticket);
+  saveTickets();
   res.json(ticket);
 });
 
-app.get('/rest/tickets/:id', async (req, res) => {
-  const ticket = await Ticket.findById(req.params.id);
-  res.json(ticket);
+
+// app.get('/rest/tickets/:id', async (req, res) => {
+//   const ticket = await Ticket.findById(req.params.id);
+//   res.json(ticket);
+// });
+
+// app.put('/rest/tickets/:id', async (req, res) => {
+//   const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//   res.json(ticket);
+// });
+
+app.get('/rest/ticket/:id', (req, res) => {
+  const ticket = tickets.find(t => t.id == req.params.id);
+  if (!ticket) {
+    res.sendStatus(404);
+  } else {
+    res.json(ticket);
+  }
 });
 
-app.put('/rest/tickets/:id', async (req, res) => {
-  const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(ticket);
+app.put('/rest/ticket/:id', (req, res) => {
+  const ticket = tickets.find(t => t.id == req.params.id);
+  if (!ticket) {
+    res.sendStatus(404);
+  } else {
+    ticket.created = req.body.created;
+    ticket.updated = req.body.updated;
+    ticket.type = req.body.type;
+    ticket.subject = req.body.subject;
+    ticket.description = req.body.description;
+    ticket.priority = req.body.priority;
+    ticket.status = req.body.status;
+    ticket.recipient = req.body.recipient;
+    ticket.submitter = req.body.submitter;
+    ticket.assigneeid = req.body.assigneeid;
+    ticket.followerids = req.body.followerids;
+    ticket.tags = req.body.tags;
+    saveTickets();
+    res.json(ticket);
+  }
 });
 
-app.delete('/rest/tickets/:id', async (req, res) => {
-  await Ticket.findByIdAndDelete(req.params.id);
-  res.sendStatus(204);
+// app.delete('/rest/tickets/:id', async (req, res) => {
+//   await Ticket.findByIdAndDelete(req.params.id);
+//   res.sendStatus(204);
+// });
+
+app.delete('/rest/ticket/:id', (req, res) => {
+  const index = tickets.findIndex(t => t.id == req.params.id);
+  if (index === -1) {
+    res.sendStatus(404);
+  } else {
+    tickets.splice(index, 1);
+    saveTickets();
+    res.sendStatus(204);
+  }
 });
 
 
 app.get('/', function(req, res) {
   const myquery = req.query;
-  var outstring = 'Starting... ';
-  res.send(outstring);
+  var ticket = 'Starting... ';
+  res.send(ticket);
 });
 
 
@@ -54,9 +109,9 @@ app.get('/', function(req, res) {
 app.get('/wfile', function(req, res) {
   const myquery = req.query;
   
-  var outstring = '';
-  for(var key in myquery) { outstring += "--" + key + ">" + myquery[key]; }
-  fs.appendFile("mydata.txt", outstring+'\n', (err) => {
+  var ticket = '';
+  for(var key in myquery) { ticket += "--" + key + ">" + myquery[key]; }
+  fs.appendFile("mydata.txt", ticket+'\n', (err) => {
     if (err)
       console.log(err);
     else {
@@ -66,7 +121,7 @@ app.get('/wfile', function(req, res) {
     }
   });
  
-  res.send(outstring);
+  res.send(ticket);
 
 });
 
