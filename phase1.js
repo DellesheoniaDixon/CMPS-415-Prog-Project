@@ -44,16 +44,41 @@ app.get('/rest/ticket/:id', (req, res) => {
   }
 });
 
-app.post('/rest/ticket', (req, res) => {
+// app.post('/rest/ticket', (req, res) => {
+//   const newData = req.body.data;
+//   // Read the existing data from file
+//   const fileData = fs.readFileSync('mydata.txt', 'utf8');
+//   // Append the new data to the existing data
+//   const updatedData = fileData + '\n' + newData;
+//   // Write the updated data back to the file
+//   fs.writeFileSync('mydata.txt', updatedData);
+//   // Send a response to the client
+//   res.send('Data updated successfully');
+// });
+
+
+// Route handler for POST /rest/data/:id
+app.post('/rest/data/:id', (req, res) => {
+  const id = req.params.id;
   const newData = req.body.data;
-  // Read the existing data from file
+
+  // Read the data from file
   const fileData = fs.readFileSync('mydata.txt', 'utf8');
-  // Append the new data to the existing data
-  const updatedData = fileData + '\n' + newData;
-  // Write the updated data back to the file
-  fs.writeFileSync('mydata.txt', updatedData);
-  // Send a response to the client
-  res.send('Data updated successfully');
+  // Split the data into an array of lines
+  const dataLines = fileData.split('\n');
+  // Find the index of the line with the matching ID
+  const matchingLineIndex = dataLines.findIndex(line => line.startsWith(id));
+  // If a matching line was found, update the data
+  if (matchingLineIndex >= 0) {
+    const matchingData = dataLines[matchingLineIndex].split(',')[1];
+    const updatedLine = `${id},${newData}`;
+    dataLines[matchingLineIndex] = updatedLine;
+    // Write the updated data back to file
+    fs.writeFileSync('mydata.txt', dataLines.join('\n'));
+    res.send(`Data associated with ID ${id} updated to ${newData}`);
+  } else {
+    res.status(404).send('Data not found');
+  }
 });
 
 app.get('/', function(req, res) {
