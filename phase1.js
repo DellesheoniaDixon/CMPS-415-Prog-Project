@@ -14,7 +14,10 @@ app.use(express.urlencoded({ extended: true }));
 //rest makes it more specific to the 'ticket' resourse
 app.get('/rest/tickets', async (req, res) => {
   const tickets = await Ticket.find();
-  res.json(tickets);
+  //const myquery = req.query;
+  var outstring = 'Starting... ';
+  res.send(outstring);
+  //res.json(tickets);
 });
 
 app.post('/rest/tickets', async (req, res) => {
