@@ -24,7 +24,7 @@ app.get('/rest/list', (req, res) => {
   });
 });
 
-app.get('/rest/ticket/:id', (req, res) => {
+app.get('/rest/ticket/:id'), (req, res) => {
   const id = req.params.id;
   // Read the data from file
   const fileData = fs.readFileSync('mydata.txt', 'utf8');
