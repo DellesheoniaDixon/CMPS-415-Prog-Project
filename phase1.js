@@ -36,59 +36,17 @@ app.get('/rest/ticket/id', (req, res) => {
 });
 
 
-
-app.post('/rest/ticket/', async (req, res) => {
-  const ticket = new Ticket(req.body);
-  await ticket.save();
-  res.json(ticket);
+app.post('/rest/data', (req, res) => {
+  const data = req.body.data;
+  fs.appendFile('mydata.txt', data, 'utf8', err => {
+    if (err) {
+      console.error(`Failed to update file: ${err}`);
+      res.status(500).send('Failed to update file');
+    } else {
+      res.send('File updated');
+    }
+  });
 });
-
-
-// app.post('/rest/ticket/create', (req, res) => {
-//   const data = req.body.data;
-//   fs.writeFile('mydata.txt', data, 'utf8', err => {
-//     if (err) {
-//       console.error(`Failed to write data to file: ${err}`);
-//       res.status(500).send('Failed to write data to file');
-//     } else {
-//       res.send('Data written to file');
-//     }
-//   });
-// });
-
-
-
-// app.put('/rest/ticket/update', (req, res) => {
-//   const ticket = tickets.find(t => t.id == req.params.id);
-//   if (!ticket) {
-//     res.sendStatus(404);
-//   } else {
-//     ticket.created = req.body.created;
-//     ticket.updated = req.body.updated;
-//     ticket.type = req.body.type;
-//     ticket.subject = req.body.subject;
-//     ticket.description = req.body.description;
-//     ticket.priority = req.body.priority;
-//     ticket.status = req.body.status;
-//     ticket.recipient = req.body.recipient;
-//     ticket.submitter = req.body.submitter;
-//     ticket.assigneeid = req.body.assigneeid;
-//     ticket.followerids = req.body.followerids;
-//     ticket.tags = req.body.tags;
-//     saveTickets();
-//     res.json(ticket);
-//   }
-// });
-
-// app.put('/rest/tickets/:id', async (req, res) => {
-//   const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
-//   res.json(ticket);
-// });
-
-// app.delete('/rest/tickets/', async (req, res) => {
-//   await Ticket.findByIdAndDelete(req.params.id);
-//   res.sendStatus(204);
-// });
 
 app.get('/', function(req, res) {
   const myquery = req.query;
