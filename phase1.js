@@ -30,6 +30,7 @@ let tickets = [
 ];
 
 // Define routes
+//rest makes it more specific to the 'ticket' resourse
 app.get('/rest/tickets', async (req, res) => {
   const tickets = await Ticket.find();
   res.json(tickets);
