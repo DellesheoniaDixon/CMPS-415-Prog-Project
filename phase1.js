@@ -30,28 +30,28 @@ let tickets = [
 ];
 
 // Define routes
-app.get('/api/tickets', async (req, res) => {
+app.get('/rest/tickets', async (req, res) => {
   const tickets = await Ticket.find();
   res.json(tickets);
 });
 
-app.post('/api/tickets', async (req, res) => {
+app.post('/rest/tickets', async (req, res) => {
   const ticket = new Ticket(req.body);
   await ticket.save();
   res.json(ticket);
 });
 
-app.get('/api/tickets/:id', async (req, res) => {
+app.get('/rest/tickets/:id', async (req, res) => {
   const ticket = await Ticket.findById(req.params.id);
   res.json(ticket);
 });
 
-app.put('/api/tickets/:id', async (req, res) => {
+app.put('/rest/tickets/:id', async (req, res) => {
   const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
   res.json(ticket);
 });
 
-app.delete('/api/tickets/:id', async (req, res) => {
+app.delete('/rest/tickets/:id', async (req, res) => {
   await Ticket.findByIdAndDelete(req.params.id);
   res.sendStatus(204);
 });
