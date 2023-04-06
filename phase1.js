@@ -18,7 +18,12 @@ app.get('/rest/list', (req, res) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
       res.status(500).send('Failed to read data from file');
-    } else {
+    }else {
+      console.log("File written successfully\n");
+      console.log("Contents of file now:\n");
+      console.log(fs.readFileSync("mydata.txt", "utf8"));
+    }
+    else {
       res.send(data);
     }
   });
@@ -62,24 +67,24 @@ app.get('/', function(req, res) {
 
 // Write to a file 
 
-app.get('/wfile', function(req, res) {
-  const myquery = req.query;
+// app.get('/wfile', function(req, res) {
+//   const myquery = req.query;
   
-  var ticket = '';
-  for(var key in myquery) { ticket += "--" + key + ">" + myquery[key]; }
-  fs.appendFile("mydata.txt", ticket+'\n', (err) => {
-    if (err)
-      console.log(err);
-    else {
-      console.log("File written successfully\n");
-      console.log("Contents of file now:\n");
-      console.log(fs.readFileSync("mydata.txt", "utf8"));
-    }
-  });
+//   var ticket = '';
+//   for(var key in myquery) { ticket += "--" + key + ">" + myquery[key]; }
+//   fs.appendFile("mydata.txt", ticket+'\n', (err) => {
+//     if (err)
+//       console.log(err);
+//     else {
+//       console.log("File written successfully\n");
+//       console.log("Contents of file now:\n");
+//       console.log(fs.readFileSync("mydata.txt", "utf8"));
+//     }
+//   });
  
-  res.send(ticket);
+//   res.send(ticket);
 
-});
+// });
 
 
 // Simple cascade
