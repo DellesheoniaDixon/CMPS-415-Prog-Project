@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 // Define routes
 //rest makes it more specific to the 'ticket' resourse
 
-app.get('/rest/list/', (req, res) => {
+app.get('/rest/list', (req, res) => {
   fs.readFile('mydata.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
@@ -24,28 +24,33 @@ app.get('/rest/list/', (req, res) => {
   });
 });
 
-app.get('/rest/ticket/id', (req, res) => {
-  fs.readFile('mydata.txt', 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Failed to read data from file: ${err}`);
-      res.status(500).send('Failed to read data from file');
-    } else {
-      res.send(data);
-    }
-  });
+app.get('/rest/ticket/:id', (req, res) => {
+  const id = req.params.id;
+  // Read the data from file
+  const fileData = fs.readFileSync('mydata.txt', 'utf8');
+  // Split the data into an array of lines
+  const dataLines = fileData.split('\n');
+  // Find the line with the matching ID
+  const matchingLine = dataLines.find(line => line.startsWith(id));
+  // If a matching line was found, return the data
+  if (matchingLine) {
+    const matchingData = matchingLine.split(',')[1];
+    res.send(matchingData);
+  } else {
+    res.status(404).send('Data not found');
+  }
 });
 
-
-app.post('/rest/data', (req, res) => {
-  const data = req.body.data;
-  fs.appendFile('mydata.txt', data, 'utf8', err => {
-    if (err) {
-      console.error(`Failed to update file: ${err}`);
-      res.status(500).send('Failed to update file');
-    } else {
-      res.send('File updated');
-    }
-  });
+app.post('/rest/ticket', (req, res) => {
+  const newData = req.body.data;
+  // Read the existing data from file
+  const fileData = fs.readFileSync('mydata.txt', 'utf8');
+  // Append the new data to the existing data
+  const updatedData = fileData + '\n' + newData;
+  // Write the updated data back to the file
+  fs.writeFileSync('mydata.txt', updatedData);
+  // Send a response to the client
+  res.send('Data updated successfully');
 });
 
 app.get('/', function(req, res) {
