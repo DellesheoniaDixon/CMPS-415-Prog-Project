@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "Doing a 415 project on Render",
   "main": "phase1.js",
-  "repository": "https://github.com/DellesheoniaDixon/CM",
+  "repository": "https://github.com/DellesheoniaDixon/CMPS-415-Prog-Project",
   "author": "DellesheoniaDixon",
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "node connect.js"
+    "start": "node phase1.js"
   },
   "dependencies": {
     "express": "^4.18.2",
