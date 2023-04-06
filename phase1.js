@@ -12,9 +12,21 @@ app.use(express.urlencoded({ extended: true }));
 
 // In-memory store for tickets
 let tickets = [
-  { id: 1, title: 'Ticket 1', description: 'Description for ticket 1', status: 'open', priority: 'low' },
-  { id: 2, title: 'Ticket 2', description: 'Description for ticket 2', status: 'closed', priority: 'high' },
-  { id: 3, title: 'Ticket 3', description: 'Description for ticket 3', status: 'open', priority: 'medium' },
+  { id: 35436,
+    created_at: "2015-07-20T22:55:29Z",
+    updated_at: "2016-05-05T10:38:52Z",
+    type: "incident",
+    subject: "MFP not working right",
+    description: "PC Load Letter? What does that even mean???",
+    priority: "med",
+    status: "open",
+    recipient: "support_example@selu.edu",
+    submitter: "Michael_bolton@selu.edu",
+    assignee_id: 235323,
+    follower_ids: [235323, 234],
+    tags: ["enterprise", "printers"],
+  }
+,
 ];
 
 // Define routes
