@@ -1,0 +1,20 @@
+{
+  "name": "415project",
+  "version": "1.0.0",
+  "description": "Doing a 415 project on Render",
+  "main": "phase1.js",
+  "repository": "https://github.com/DellesheoniaDixon/CM",
+  "author": "DellesheoniaDixon",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node connect.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongodb": "^5.1.0"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
