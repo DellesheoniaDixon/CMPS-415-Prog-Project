@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 //   const token = req.body.token;
 //   await ticket.save();
 // });
-app.post('/rest/ticket', (req, res) => {
+app.post('/rest/ticket/create', (req, res) => {
   const data = req.body.data;
   fs.writeFile('mydata.txt', data, 'utf8', err => {
     if (err) {
@@ -92,7 +92,7 @@ app.get('/rest/ticket', (req, res) => {
 //   });
 // });
 
-app.put('/rest/ticket/:id', (req, res) => {
+app.put('/rest/ticket/update', (req, res) => {
   const ticket = tickets.find(t => t.id == req.params.id);
   if (!ticket) {
     res.sendStatus(404);
@@ -131,7 +131,7 @@ app.put('/rest/ticket/:id', (req, res) => {
 // });
 
 
-app.delete('/rest/ticket/id', (req, res) => {
+app.delete('/rest/ticket/delete', (req, res) => {
   const index = tickets.findIndex(t => t.id == req.params.id);
   if (index === -1) {
     res.sendStatus(404);
@@ -173,10 +173,10 @@ app.get('/wfile', function(req, res) {
 
 
 // Simple cascade
-app.param('name', function(req, res, next, name) {
-  const modified = name.toUpperCase();
+// app.param('name', function(req, res, next, name) {
+//   const modified = name.toUpperCase();
 
-  req.name = modified;
-  next();
-});
+//   req.name = modified;
+//   next();
+// });
 
