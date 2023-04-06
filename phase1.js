@@ -13,7 +13,18 @@ app.use(express.urlencoded({ extended: true }));
 // Define routes
 //rest makes it more specific to the 'ticket' resourse
 
-app.get('/rest/ticket', (req, res) => {
+app.get('/rest/list/', (req, res) => {
+  fs.readFile('mydata.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error(`Failed to read data from file: ${err}`);
+      res.status(500).send('Failed to read data from file');
+    } else {
+      res.send(data);
+    }
+  });
+});
+
+app.get('/rest/ticket/id', (req, res) => {
   fs.readFile('mydata.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
@@ -25,7 +36,8 @@ app.get('/rest/ticket', (req, res) => {
 });
 
 
-app.post('/rest/tickets', async (req, res) => {
+
+app.post('/rest/ticket/', async (req, res) => {
   const ticket = new Ticket(req.body);
   await ticket.save();
   res.json(ticket);
@@ -68,15 +80,15 @@ app.post('/rest/tickets', async (req, res) => {
 //   }
 // });
 
-app.put('/rest/tickets/:id', async (req, res) => {
-  const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
-  res.json(ticket);
-});
+// app.put('/rest/tickets/:id', async (req, res) => {
+//   const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
+//   res.json(ticket);
+// });
 
-app.delete('/rest/tickets/:id', async (req, res) => {
-  await Ticket.findByIdAndDelete(req.params.id);
-  res.sendStatus(204);
-});
+// app.delete('/rest/tickets/', async (req, res) => {
+//   await Ticket.findByIdAndDelete(req.params.id);
+//   res.sendStatus(204);
+// });
 
 app.get('/', function(req, res) {
   const myquery = req.query;
