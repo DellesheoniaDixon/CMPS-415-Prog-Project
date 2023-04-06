@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 //   const token = req.body.token;
 //   await ticket.save();
 // });
-app.post('/rest/data', (req, res) => {
+app.post('/rest/ticket', (req, res) => {
   const data = req.body.data;
   fs.writeFile('mydata.txt', data, 'utf8', err => {
     if (err) {
@@ -60,7 +60,7 @@ app.post('/rest/data', (req, res) => {
 //   const ticket = await Ticket.findByIdAndUpdate(req.params.id, req.body, { new: true });
 //   res.json(ticket);
 // });
-app.get('/rest/data', (req, res) => {
+app.get('/rest/ticket', (req, res) => {
   fs.readFile('mydata.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
@@ -80,7 +80,7 @@ app.get('/rest/data', (req, res) => {
 //   }
 // });
 
-app.put('/rest/data/id', (req, res) => {
+app.put('/rest/ticket/id', (req, res) => {
   const data = req.body.data;
   fs.writeFile('mydata.txt', data, 'utf8', err => {
     if (err) {
@@ -119,7 +119,7 @@ app.put('/rest/data/id', (req, res) => {
 //   res.sendStatus(204);
 // });
 
-app.delete('/rest/data/id', (req, res) => {
+app.delete('/rest/ticket/id', (req, res) => {
   fs.unlink('mydata.txt', err => {
     if (err) {
       console.error(`Failed to delete file: ${err}`);
