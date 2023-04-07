@@ -88,5 +88,11 @@ app.get('/', function(req, res) {
   var ticket = 'Starting... ';
   res.send(ticket);
 });
+app.post('/', function(req, res) {
+  const myquery = req.query;
+  var ticket = 'Starting... ';
+  res.send(ticket);
+});
+
 
 
