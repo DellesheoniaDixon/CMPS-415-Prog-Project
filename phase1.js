@@ -109,19 +109,40 @@ app.get('/rest/ticket/:id', (req, res) => {
 //     });
 //   });
 // });
-
-app.post('/rest/ticket', function(req, res) {
-  const ticket_id = req.body.id;
-  const token = req.body.token;
-  const geo = req.body.geo;
-
-  res.send({
-    'ticket_id': ticket_id,
-    'token': token,
-    'geo': geo
-  });
+app.post('/rest/ticket', (req, res) => {
+  // Read the existing data from the file
+  const fileData = fs.readFileSync('mydata.txt');
+  const data = JSON.parse(fileData);
+  
+  // Generate a new ID for the ticket
+  const newId = data.length > 0 ? data[data.length - 1].id + 1 : 1;
+  
+  // Create a new ticket object with the request data and generated ID
+  const newTicket = {
+    id: newId,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    type: req.body.type,
+    subject: req.body.subject,
+    description: req.body.description,
+    priority: req.body.priority,
+    status: req.body.status,
+    recipient: req.body.recipient,
+    submitter: req.body.submitter,
+    assignee_id: req.body.assignee_id,
+    follower_ids: req.body.follower_ids || [],
+    tags: req.body.tags || []
+  };
+  
+  // Add the new ticket to the data array
+  data.push(newTicket);
+  
+  // Write the updated data back to the file
+  fs.writeFileSync('mydata.txt', JSON.stringify(data, null, 2));
+  
+  // Send the new ticket object in the response
+  res.json(newTicket);
 });
-
 
 app.get('/', function(req, res) {
   const myquery = req.query;
