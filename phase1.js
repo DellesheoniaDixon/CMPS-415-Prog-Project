@@ -81,32 +81,44 @@ app.get('/rest/ticket/:id', (req, res) => {
 //   }
 // });
 
-app.post('/rest/ticket', (req, res) => {
-  // Read the current data from the file
-  fs.readFile('mydata.txt', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error reading file');
-      return;
-    }
+// app.post('/rest/ticket', (req, res) => {
+//   // Read the current data from the file
+//   fs.readFile('mydata.txt', 'utf8', (err, data) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send('Error reading file');
+//       return;
+//     }
 
-    // Parse the data into an array of ticket objects
-    let tickets = JSON.parse(data);
+//     // Parse the data into an array of ticket objects
+//     let tickets = JSON.parse(data);
 
-    // Add the new ticket object to the array
-    const newTicket = req.body;
-    tickets.push(newTicket);
+//     // Add the new ticket object to the array
+//     const newTicket = req.body;
+//     tickets.push(newTicket);
 
-    // Write the updated data back to the file
-    fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error writing file');
-        return;
-      }
+//     // Write the updated data back to the file
+//     fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
+//       if (err) {
+//         console.error(err);
+//         res.status(500).send('Error writing file');
+//         return;
+//       }
 
-      res.send(`Ticket ${newTicket.id} created`);
-    });
+//       res.send(`Ticket ${newTicket.id} created`);
+//     });
+//   });
+// });
+
+app.post('/rest/ticket', function(req, res) {
+  const ticket_id = req.body.id;
+  const token = req.body.token;
+  const geo = req.body.geo;
+
+  res.send({
+    'ticket_id': ticket_id,
+    'token': token,
+    'geo': geo
   });
 });
 
