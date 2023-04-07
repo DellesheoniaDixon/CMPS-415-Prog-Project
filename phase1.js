@@ -62,24 +62,54 @@ app.get('/rest/ticket/:id', (req, res) => {
 //   const id = req.params.id;
 //   const newData = req.body.data;
 
-  // Read the data from file
-  const fileData = fs.readFileSync('mydata.txt', 'utf8');
-  // Split the data into an array of lines
-  const dataLines = fileData.split('\n');
-  // Find the index of the line with the matching ID
-  const matchingLineIndex = dataLines.findIndex(line => line.startsWith(id));
-  // If a matching line was found, update the data
-  if (matchingLineIndex >= 0) {
-    const matchingData = dataLines[matchingLineIndex].split(',')[1];
-    const updatedLine = `${id},${newData}`;
-    dataLines[matchingLineIndex] = updatedLine;
-    // Write the updated data back to file
-    fs.writeFileSync('mydata.txt', dataLines.join('\n'));
-    res.send(`Data associated with ID ${id} updated to ${newData}`);
-  } else {
-    res.status(404).send('Data not found');
-  }
+//   // Read the data from file
+//   const fileData = fs.readFileSync('mydata.txt', 'utf8');
+//   // Split the data into an array of lines
+//   const dataLines = fileData.split('\n');
+//   // Find the index of the line with the matching ID
+//   const matchingLineIndex = dataLines.findIndex(line => line.startsWith(id));
+//   // If a matching line was found, update the data
+//   if (matchingLineIndex >= 0) {
+//     const matchingData = dataLines[matchingLineIndex].split(',')[1];
+//     const updatedLine = `${id},${newData}`;
+//     dataLines[matchingLineIndex] = updatedLine;
+//     // Write the updated data back to file
+//     fs.writeFileSync('mydata.txt', dataLines.join('\n'));
+//     res.send(`Data associated with ID ${id} updated to ${newData}`);
+//   } else {
+//     res.status(404).send('Data not found');
+//   }
+// });
+
+app.post('/rest/ticket', (req, res) => {
+  // Read the current data from the file
+  fs.readFile('mydata.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Error reading file');
+      return;
+    }
+
+    // Parse the data into an array of ticket objects
+    let tickets = JSON.parse(data);
+
+    // Add the new ticket object to the array
+    const newTicket = req.body;
+    tickets.push(newTicket);
+
+    // Write the updated data back to the file
+    fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error writing file');
+        return;
+      }
+
+      res.send(`Ticket ${newTicket.id} created`);
+    });
+  });
 });
+
 
 app.get('/', function(req, res) {
   const myquery = req.query;
