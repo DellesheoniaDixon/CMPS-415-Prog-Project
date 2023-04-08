@@ -29,70 +29,93 @@ app.get('/rest/list', (req, res) => {
   });
 });
 
-app.get('/tickets/:id', (req, res) => {
-  const id = parseInt(req.params.id);
 
-  fs.readFile('tickets.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
-      return;
-    }
-
-    const tickets = JSON.parse(data);
-    const ticket = tickets.find((t) => t.id === id);
-
-    if (!ticket) {
-      res.status(404).send('Ticket not found');
-      return;
-    }
-
-    res.send(ticket);
-  });
+app.get('/rest/ticket/:id', (req, res) => {
+  const ticket = tickets.getTicketById(req.params.id);
+  if (ticket) {
+    res.json(ticket);
+  } else {
+    res.status(404).json({ error: 'Ticket not found' });
+  }
 });
 
 
-// Create a new ticket
 app.post('/rest/ticket', (req, res) => {
-  const newId = Math.floor(Math.random() * 1000) + 1;
-  const newTicket = {
-    id: newId,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
-    type: req.body.type,
-    subject: req.body.subject,
-    description: req.body.description,
-    priority: req.body.priority,
-    status: req.body.status,
-    recipient: req.body.recipient,
-    submitter: req.body.submitter,
-    assignee_id: req.body.assignee_id,
-    follower_ids: req.body.follower_ids || [],
-    tags: req.body.tags || []
-  };
-
-  fs.readFile('tickets.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Server Error');
-      return;
-    }
-
-    const tickets = JSON.parse(data);
-
-    tickets.push(newTicket);
-
-    fs.writeFile('tickets.json', JSON.stringify(tickets), (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Server Error');
-        return;
-      }
-
-      res.status(201).send(newTicket);
-    });
-  });
+  const { title, description } = req.body;
+  if (!title || !description) {
+    res.status(400).json({ error: 'Unable to access ticket information' });
+  } else {
+    const newTicket = tickets.addTicket(title, description);
+    res.json(newTicket);
+  }
 });
+
+
+
+// app.get('/tickets/:id', (req, res) => {
+//   const id = parseInt(req.params.id);
+
+//   fs.readFile('tickets.json', 'utf8', (err, data) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send('Server Error');
+//       return;
+//     }
+
+//     const tickets = JSON.parse(data);
+//     const ticket = tickets.find((t) => t.id === id);
+
+//     if (!ticket) {
+//       res.status(404).send('Ticket not found');
+//       return;
+//     }
+
+//     res.send(ticket);
+//   });
+// });
+
+
+// // Create a new ticket
+// app.post('/rest/ticket', (req, res) => {
+//   const newId = Math.floor(Math.random() * 1000) + 1;
+//   const newTicket = {
+//     id: newId,
+//     created_at: new Date().toISOString(),
+//     updated_at: new Date().toISOString(),
+//     type: req.body.type,
+//     subject: req.body.subject,
+//     description: req.body.description,
+//     priority: req.body.priority,
+//     status: req.body.status,
+//     recipient: req.body.recipient,
+//     submitter: req.body.submitter,
+//     assignee_id: req.body.assignee_id,
+//     follower_ids: req.body.follower_ids || [],
+//     tags: req.body.tags || []
+//   };
+
+//   fs.readFile('tickets.json', 'utf8', (err, data) => {
+//     if (err) {
+//       console.error(err);
+//       res.status(500).send('Server Error');
+//       return;
+//     }
+
+//     const tickets = JSON.parse(data);
+
+//     tickets.push(newTicket);
+
+//     fs.writeFile('tickets.json', JSON.stringify(tickets), (err) => {
+//       if (err) {
+//         console.error(err);
+//         res.status(500).send('Server Error');
+//         return;
+//       }
+
+//       res.status(201).send(newTicket);
+//     });
+//   });
+// });
 
 
 // app.post('/post/ticket', function(req, res) {
