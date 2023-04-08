@@ -3,7 +3,7 @@ const bodyParser=require('body-parser');
 const app = express();
 const port = 3000;
 var fs = require("fs");
-const request = require('request');
+const fetch = require('node-fetch');
 
 app.listen(port);
 console.log('Server started at http://localhost:' + port);
@@ -32,33 +32,38 @@ app.get('/rest/list', (req, res) => {
 
 app.get('/rest/ticket/:id', (req, res) => {
   const id = req.params.id;
-  // Read the data from file
-  const fileData = fs.readFileSync('mydata.txt', 'utf8');
-  // Split the data into an array of lines
-  const dataLines = fileData.split('\n');
-  // Find the line with the matching ID
-  const matchingLine = dataLines.find(line => line.startsWith(id));
-  // If a matching line was found, return the data
-  if (matchingLine) {
-    const matchingData = matchingLine.split(',')[1];
-    res.send(matchingData);
-  } else {
-    res.status(404).send('Data not found');
-  }
-});
+  
+  fs.readFile('mydata.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
 
-const data = fs.readFileSync('mydata.txt', 'utf8');
 
-request.post('https://cmps415project.onrender.com/rest/ticket', {
-  json: { data }
-}, (error, response, body) => {
-  if (error) {
+
+const axios = require('axios');
+
+const ticketData = {
+  id: newId,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+  type: req.body.type,
+  subject: req.body.subject,
+  description: req.body.description,
+  priority: req.body.priority,
+  status: req.body.status,
+  recipient: req.body.recipient,
+  submitter: req.body.submitter,
+  assignee_id: req.body.assignee_id,
+  follower_ids: req.body.follower_ids || [],
+  tags: req.body.tags || []
+};
+
+axios.post('https://cmps415project.onrender.com/rest/ticket', ticketData)
+  .then((response) => {
+    console.log(response.data);
+  })
+  .catch((error) => {
     console.error(error);
-  } else {
-    console.log(body);
-  }
-});
-
+  });
 
 // app.post('/rest/ticket', (req, res) => {
 //   // Read the existing data from the file
