@@ -35,7 +35,7 @@ app.get('/rest/list', (req, res) => {
 let tickets = [];
 
 // Read data from file and store it in `tickets` array
-fs.readFile('mydata.txt', 'utf8', (err, data) => {
+fs.readFile('mydata.json', 'utf8', (err, data) => {
   if (err) {
     console.error(`Failed to read data from file: ${err}`);
   } else {
@@ -85,7 +85,7 @@ app.post('/rest/ticket', (req, res) => {
   tickets.push(newTicket);
 
   // Write the updated `tickets` array to file
-  fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
+  fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
     if (err) {
       console.error(`Failed to write data to file: ${err}`);
       res.status(500).send('Failed to write data to file');
