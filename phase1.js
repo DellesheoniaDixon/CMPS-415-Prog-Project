@@ -29,24 +29,12 @@ app.get('/rest/list', (req, res) => {
   });
 });
 
-app.get('/rest/ticket/:id', (req, res) => {
-  const id = req.params.id;
-  
-  fs.readFile('mydata.txt', 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Failed to read data from file: ${err}`);
-      res.status(500).send('Failed to read data from file');
-    } else {
-      const tickets = JSON.parse(data);
-      const ticket = tickets.find(t => t.id === id);
-      if (ticket) {
-        res.send(ticket);
-      } else {
-        res.status(404).send(`Ticket with ID ${id} not found`);
-      }
-    }
-  });
+app.get('/rest/ticket/:id', function(req, res) {
+  const searchKey = "{ id: '" + req.params.id + "'}";
+  console.log("Looking for: " + searchKey); 
 });
+
+
 
 
 
