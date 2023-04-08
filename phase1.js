@@ -31,46 +31,15 @@ app.get('/rest/list', (req, res) => {
 
 
 
-app.get('/rest/ticket/:id', function(req,res){
- const id = parseInt(req.params.id);
-    console.log('Looking for: ' + id);
-  
-     fs.readFile("./mydata.json", 'utf8', (err,jsonString) => {
-        if (err){
-            console.error(err);
-          return;
-        }
-          try{
-            const tickets = JSON.parse(jsonString);
-            const ticket = tickets.find(t => t.id === id);
-            if (ticket){
-              console.log(`Ticket with ID ${id} found!`);
-              res.json(ticket);
-            }
-            else{
-            console.log(`Ticket with ID ${id} not found!`);
-            res.status(404);
-            }
-          }
-          catch(err){
-            console.error(err);
-          }
-       });
-  });
-
-
-
-
 // In-memory array to store tickets (for demo purposes)
 let tickets = [];
 
-// Read data from file on server start-up
-fs.readFile('mydata.json', 'utf8', (err, data) => {
+// Read data from file and store it in `tickets` array
+fs.readFile('mydata.txt', 'utf8', (err, data) => {
   if (err) {
     console.error(`Failed to read data from file: ${err}`);
   } else {
     tickets = JSON.parse(data);
-    console.log(`Loaded ${tickets.length} tickets from file.`);
   }
 });
 
@@ -116,7 +85,7 @@ app.post('/rest/ticket', (req, res) => {
   tickets.push(newTicket);
 
   // Write the updated `tickets` array to file
-  fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
+  fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
     if (err) {
       console.error(`Failed to write data to file: ${err}`);
       res.status(500).send('Failed to write data to file');
@@ -127,7 +96,16 @@ app.post('/rest/ticket', (req, res) => {
 });
 
 
-
+// Endpoint to get a specific ticket by ID
+app.get('/rest/ticket/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const ticket = tickets.find(t => t.id === id);
+  if (ticket) {
+    res.json(ticket);
+  } else {
+    res.status(404).json({ error: 'Ticket not found' });
+  }
+});
 
 
 
