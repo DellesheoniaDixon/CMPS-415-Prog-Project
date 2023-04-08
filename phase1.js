@@ -36,18 +36,6 @@ app.get('/rest/ticket/:id', (req, res) => {
 });
 
 
-app.get('/rest/ticket/:id', (req, res) => {
-  const id = req.params.id;
-  
-  fs.readFile('mydata.txt', 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-    } else {
-      res.send(data);
-    }
-  });
-});
-
 
 app.post('/rest/ticket', (req, res) => {
   // Generate new ID for ticket
