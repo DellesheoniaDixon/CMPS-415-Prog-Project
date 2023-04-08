@@ -43,21 +43,21 @@ app.get('/rest/ticket/:id', (req, res) => {
 
 
 
-// In-memory array to store tickets (for demo purposes)
-let tickets = [];
-
-// Read data from file on server start-up
-fs.readFile('mydata.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error(`Failed to read data from file: ${err}`);
-  } else {
-    tickets = JSON.parse(data);
-    console.log(`Loaded ${tickets.length} tickets from file.`);
-  }
-});
-
+// Define the Ticket class
 class Ticket {
-  constructor(id, type, subject, description, priority, status, recipient, submitter, assignee_id, follower_ids, tags) {
+  constructor(
+    id,
+    type,
+    subject,
+    description,
+    priority,
+    status,
+    recipient,
+    submitter,
+    assignee_id,
+    follower_ids,
+    tags
+  ) {
     this.id = id;
     this.type = type;
     this.subject = subject;
@@ -74,7 +74,10 @@ class Ticket {
   }
 }
 
-// Endpoint to create a new ticket and write data to file
+// In-memory array to store tickets
+let tickets = [];
+
+// Endpoint to create a new ticket
 app.post('/rest/ticket', (req, res) => {
   // Generate a new ID for the ticket
   const newId = tickets.length + 1;
@@ -97,17 +100,9 @@ app.post('/rest/ticket', (req, res) => {
   // Add the new ticket to the array
   tickets.push(newTicket);
 
-  // Write the updated `tickets` array to file
-  fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-    if (err) {
-      console.error(`Failed to write data to file: ${err}`);
-      res.status(500).send('Failed to write data to file');
-    } else {
-      res.json(newTicket);
-    }
-  });
+  // Return the new ticket object as JSON
+  res.json(newTicket);
 });
-
 
 app.get('/', function(req, res) {
   const myquery = req.query;
