@@ -39,17 +39,6 @@ app.get('/rest/ticket/:id', (req, res) => {
   }
 });
 
-// In-memory array to store tickets (for demo purposes)
-let tickets = [];
-
-// Read data from file and store it in `tickets` array
-fs.readFile('mydata.txt', 'utf8', (err, data) => {
-  if (err) {
-    console.error(`Failed to read data from file: ${err}`);
-  } else {
-    tickets = JSON.parse(data);
-  }
-});
 
 class Ticket {
   constructor(id, type, subject, description, priority, status, recipient, submitter, assignee_id, follower_ids, tags) {
