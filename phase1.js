@@ -16,19 +16,25 @@ app.use(bodyParser.json());
 // Define routes
 //rest makes it more specific to the 'ticket' resourse
 
-app.get('/rest/list', (req, res) => {
+app.get('/rest/ticket/:id', (req, res) => {
+  const id = req.params.id;
+  
   fs.readFile('mydata.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
       res.status(500).send('Failed to read data from file');
-    }
-    else {
-       console.log("File written successfully\n");
-      console.log("Contents of file now:\n");
-      res.send(data);
+    } else {
+      const tickets = JSON.parse(data);
+      const ticket = tickets.find(t => t.id === id);
+      if (ticket) {
+        res.send(ticket);
+      } else {
+        res.status(404).send(`Ticket with ID ${id} not found`);
+      }
     }
   });
 });
+
 
 app.get('/rest/ticket/:id', (req, res) => {
   const id = req.params.id;
