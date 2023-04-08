@@ -29,44 +29,103 @@ app.get('/rest/list', (req, res) => {
   });
 });
 
-app.get('/rest/ticket/:id', function(req, res) {
-  const searchKey = "{ id: '" + req.params.id + "'}";
-  console.log("Looking for: " + searchKey); 
-});
+app.get('/tickets/:id', (req, res) => {
+  const id = parseInt(req.params.id);
 
+  fs.readFile('tickets.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+      return;
+    }
 
+    const tickets = JSON.parse(data);
+    const ticket = tickets.find((t) => t.id === id);
 
-app.post('/post/ticket', function(req, res) {
-  const id = req.body.id;
-  const created_at = new Date().toISOString();
-  const updated_at = new Date().toISOString();
-  const type = req.body.type;
-  const subject = req.body.subject;
-  const description = req.body.description;
-  const priority = req.body.priority;
-  const status = req.body.status;
-  const recipient = req.body.recipient;
-  const submitter = req.body.submitter;
-  const assignee_id = req.body.assignee_id;
-  const follower_ids = req.body.follower_ids || [];
-  const tags = req.body.tags || [];
+    if (!ticket) {
+      res.status(404).send('Ticket not found');
+      return;
+    }
 
-  res.send({
-    'id': id,
-    'created_at': created_at,
-    'updated_at': updated_at,
-    'type': type,
-    'subject': subject,
-    'description': description,
-    'priority': priority,
-    'status': status,
-    'recipient': recipient,
-    'submitter': submitter,
-    'assignee_id': assignee_id,
-    'follower_ids': follower_ids,
-    'tags': tags
+    res.send(ticket);
   });
 });
+
+
+// Create a new ticket
+app.post('/rest/ticket', (req, res) => {
+  const newId = Math.floor(Math.random() * 1000) + 1;
+  const newTicket = {
+    id: newId,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    type: req.body.type,
+    subject: req.body.subject,
+    description: req.body.description,
+    priority: req.body.priority,
+    status: req.body.status,
+    recipient: req.body.recipient,
+    submitter: req.body.submitter,
+    assignee_id: req.body.assignee_id,
+    follower_ids: req.body.follower_ids || [],
+    tags: req.body.tags || []
+  };
+
+  fs.readFile('tickets.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+      return;
+    }
+
+    const tickets = JSON.parse(data);
+
+    tickets.push(newTicket);
+
+    fs.writeFile('tickets.json', JSON.stringify(tickets), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+        return;
+      }
+
+      res.status(201).send(newTicket);
+    });
+  });
+});
+
+
+// app.post('/post/ticket', function(req, res) {
+//   const id = req.body.id;
+//   const created_at = new Date().toISOString();
+//   const updated_at = new Date().toISOString();
+//   const type = req.body.type;
+//   const subject = req.body.subject;
+//   const description = req.body.description;
+//   const priority = req.body.priority;
+//   const status = req.body.status;
+//   const recipient = req.body.recipient;
+//   const submitter = req.body.submitter;
+//   const assignee_id = req.body.assignee_id;
+//   const follower_ids = req.body.follower_ids || [];
+//   const tags = req.body.tags || [];
+
+//   res.send({
+//     'id': id,
+//     'created_at': created_at,
+//     'updated_at': updated_at,
+//     'type': type,
+//     'subject': subject,
+//     'description': description,
+//     'priority': priority,
+//     'status': status,
+//     'recipient': recipient,
+//     'submitter': submitter,
+//     'assignee_id': assignee_id,
+//     'follower_ids': follower_ids,
+//     'tags': tags
+//   });
+// });
 
 // app.post('/rest/ticket', (req, res) => {
 //   // Generate new ID for ticket
