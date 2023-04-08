@@ -114,7 +114,7 @@ if (ticket) {
 res.status(200).send(JSON.stringify(ticket, null, 2));
 } else {
 // Otherwise, return a 404 error with a message
-res.status(404).send(Ticket with id ${req.params.id} not found.);
+res.status(404).send(ticket with id ${req.params.id} not found.);
 }
 });
 app.get('/', function(req, res) {
