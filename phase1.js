@@ -39,7 +39,17 @@ app.get('/rest/ticket/:id', (req, res) => {
   }
 });
 
+// In-memory array to store tickets (for demo purposes)
+let tickets = [];
 
+// Read data from file and store it in `tickets` array
+fs.readFile('mydata.txt', 'utf8', (err, data) => {
+  if (err) {
+    console.error(`Failed to read data from file: ${err}`);
+  } else {
+    tickets = JSON.parse(data);
+  }
+});
 
 class Ticket {
   constructor(id, type, subject, description, priority, status, recipient, submitter, assignee_id, follower_ids, tags) {
@@ -59,10 +69,7 @@ class Ticket {
   }
 }
 
-// In-memory array to store tickets (for demo purposes)
-let tickets = [];
-
-// Endpoint to create a new ticket
+// Endpoint to create a new ticket and write data to file
 app.post('/rest/ticket', (req, res) => {
   // Generate a new ID for the ticket
   const newId = tickets.length + 1;
@@ -85,156 +92,16 @@ app.post('/rest/ticket', (req, res) => {
   // Add the new ticket to the array
   tickets.push(newTicket);
 
-  // Return the new ticket object as JSON
-  res.json(newTicket);
+  // Write the updated `tickets` array to file
+  fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
+    if (err) {
+      console.error(`Failed to write data to file: ${err}`);
+      res.status(500).send('Failed to write data to file');
+    } else {
+      res.json(newTicket);
+    }
+  });
 });
-
-
-
-// app.get('/tickets/:id', (req, res) => {
-//   const id = parseInt(req.params.id);
-
-//   fs.readFile('tickets.json', 'utf8', (err, data) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).send('Server Error');
-//       return;
-//     }
-
-//     const tickets = JSON.parse(data);
-//     const ticket = tickets.find((t) => t.id === id);
-
-//     if (!ticket) {
-//       res.status(404).send('Ticket not found');
-//       return;
-//     }
-
-//     res.send(ticket);
-//   });
-// });
-
-
-// // Create a new ticket
-// app.post('/rest/ticket', (req, res) => {
-//   const newId = Math.floor(Math.random() * 1000) + 1;
-//   const newTicket = {
-//     id: newId,
-//     created_at: new Date().toISOString(),
-//     updated_at: new Date().toISOString(),
-//     type: req.body.type,
-//     subject: req.body.subject,
-//     description: req.body.description,
-//     priority: req.body.priority,
-//     status: req.body.status,
-//     recipient: req.body.recipient,
-//     submitter: req.body.submitter,
-//     assignee_id: req.body.assignee_id,
-//     follower_ids: req.body.follower_ids || [],
-//     tags: req.body.tags || []
-//   };
-
-//   fs.readFile('tickets.json', 'utf8', (err, data) => {
-//     if (err) {
-//       console.error(err);
-//       res.status(500).send('Server Error');
-//       return;
-//     }
-
-//     const tickets = JSON.parse(data);
-
-//     tickets.push(newTicket);
-
-//     fs.writeFile('tickets.json', JSON.stringify(tickets), (err) => {
-//       if (err) {
-//         console.error(err);
-//         res.status(500).send('Server Error');
-//         return;
-//       }
-
-//       res.status(201).send(newTicket);
-//     });
-//   });
-// });
-
-
-// app.post('/post/ticket', function(req, res) {
-//   const id = req.body.id;
-//   const created_at = new Date().toISOString();
-//   const updated_at = new Date().toISOString();
-//   const type = req.body.type;
-//   const subject = req.body.subject;
-//   const description = req.body.description;
-//   const priority = req.body.priority;
-//   const status = req.body.status;
-//   const recipient = req.body.recipient;
-//   const submitter = req.body.submitter;
-//   const assignee_id = req.body.assignee_id;
-//   const follower_ids = req.body.follower_ids || [];
-//   const tags = req.body.tags || [];
-
-//   res.send({
-//     'id': id,
-//     'created_at': created_at,
-//     'updated_at': updated_at,
-//     'type': type,
-//     'subject': subject,
-//     'description': description,
-//     'priority': priority,
-//     'status': status,
-//     'recipient': recipient,
-//     'submitter': submitter,
-//     'assignee_id': assignee_id,
-//     'follower_ids': follower_ids,
-//     'tags': tags
-//   });
-// });
-
-// app.post('/rest/ticket', (req, res) => {
-//   // Generate new ID for ticket
-//   const newId = Date.now().toString();
-  
-//   // Construct new ticket object
-//   const newTicket = {
-//     id: newId,
-//     created_at: new Date().toISOString(),
-//     updated_at: new Date().toISOString(),
-//     type: req.body.type,
-//     subject: req.body.subject,
-//     description: req.body.description,
-//     priority: req.body.priority,
-//     status: req.body.status,
-//     recipient: req.body.recipient,
-//     submitter: req.body.submitter,
-//     assignee_id: req.body.assignee_id,
-//     follower_ids: req.body.follower_ids || [],
-//     tags: req.body.tags || []
-//   };
-  
-//   // Read current ticket data
-//   fs.readFile('mydata.txt', 'utf8', (err, data) => {
-//     if (err) {
-//       console.error(`Failed to read data from file: ${err}`);
-//       res.status(500).send('Failed to read data from file');
-//     } else {
-//       let tickets = [];
-//       if (data) {
-//         tickets = JSON.parse(data);
-//       }
-//       // Add new ticket to list of tickets
-//       tickets.push(newTicket);
-      
-//       // Write updated ticket data to file
-//       fs.writeFile('mydata.txt', JSON.stringify(tickets), 'utf8', err => {
-//         if (err) {
-//           console.error(`Failed to write data to file: ${err}`);
-//           res.status(500).send('Failed to write data to file');
-//         } else {
-//           res.send(newTicket);
-//         }
-//       });
-//     }
-//   });
-// });
 
 
 
