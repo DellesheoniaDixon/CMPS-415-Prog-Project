@@ -31,15 +31,32 @@ app.get('/rest/list', (req, res) => {
 
 
 
-
-app.get('/rest/ticket/:id', (req, res) => {
-  const ticket = tickets.getTicketById(req.params.id);
-  if (ticket) {
-    res.json(ticket);
-  } else {
-    res.status(404).json({ error: 'Ticket not found' });
-  }
-});
+app.get('/rest/ticket/:id', function(req,res){
+ const id = parseInt(req.params.id);
+    console.log('Looking for: ' + id);
+  
+     fs.readFile("./mydata.json", 'utf8', (err,jsonString) => {
+        if (err){
+            console.error(err);
+          return;
+        }
+          try{
+            const tickets = JSON.parse(jsonString);
+            const ticket = tickets.find(t => t.id === id);
+            if (ticket){
+              console.log(`Ticket with ID ${id} found!`);
+              res.json(ticket);
+            }
+            else{
+            console.log(`Ticket with ID ${id} not found!`);
+            res.status(404);
+            }
+          }
+          catch(err){
+            console.error(err);
+          }
+       });
+  });
 
 
 // Define the Ticket class
