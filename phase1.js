@@ -36,7 +36,10 @@ app.get('/rest/ticket/:id', (req, res) => {
   fs.readFile('mydata.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(err);
-   });
+    } else {
+      res.send(data);
+    }
+  });
 });
 
       
