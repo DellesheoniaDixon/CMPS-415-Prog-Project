@@ -50,8 +50,8 @@ app.get('/rest/ticket/:id', (req, res) => {
 
 app.post('/rest/ticket', (req, res) => {
   // Read the existing data from the file
-  const fileData = fs.readFileSync('mydata.txt');
-  const data = JSON.parse(fileData);
+//   const fileData = fs.readFileSync('mydata.txt');
+//   const data = JSON.parse(fileData);
   
   // Generate a new ID for the ticket
   const newId = data.length > 0 ? data[data.length - 1].id + 1 : 1;
