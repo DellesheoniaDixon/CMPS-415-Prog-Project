@@ -48,8 +48,7 @@ app.get('/rest/ticket/:id', (req, res) => {
   });
 });
 
-      
-      
+
 app.post('/rest/ticket', (req, res) => {
   // Generate new ID for ticket
   const newId = Date.now().toString();
@@ -71,17 +70,32 @@ app.post('/rest/ticket', (req, res) => {
     tags: req.body.tags || []
   };
   
-  // Append new ticket data to data.txt file
-  fs.appendFile('data.txt', JSON.stringify(newTicket) + '\n', (err) => {
+  // Read current ticket data
+  fs.readFile('mydata.txt', 'utf8', (err, data) => {
     if (err) {
-      console.error(err);
-      res.status(500).send('Error creating new ticket');
+      console.error(`Failed to read data from file: ${err}`);
+      res.status(500).send('Failed to read data from file');
     } else {
-      res.send('New ticket created successfully');
+      let tickets = [];
+      if (data) {
+        tickets = JSON.parse(data);
+      }
+      // Add new ticket to list of tickets
+      tickets.push(newTicket);
+      
+      // Write updated ticket data to file
+      fs.writeFile('mydata.txt', JSON.stringify(tickets), 'utf8', err => {
+        if (err) {
+          console.error(`Failed to write data to file: ${err}`);
+          res.status(500).send('Failed to write data to file');
+        } else {
+          res.send(newTicket);
+        }
+      });
     }
   });
 });
-  
+
 
 
 app.get('/', function(req, res) {
