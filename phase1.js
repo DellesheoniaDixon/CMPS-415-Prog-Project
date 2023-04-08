@@ -16,18 +16,20 @@ app.use(bodyParser.json());
 // Define routes
 //rest makes it more specific to the 'ticket' resourse
 app.get('/rest/list', (req, res) => {
-  fs.readFile('mydata.txt', 'utf8', (err, data) => {
+  fs.readFile('mydata.json', 'utf8', (err, data) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
       res.status(500).send('Failed to read data from file');
     }
     else {
-       console.log("File written successfully\n");
+      console.log("File read successfully\n");
       console.log("Contents of file now:\n");
       res.send(data);
     }
   });
 });
+
+
 
 
 app.get('/rest/ticket/:id', (req, res) => {
@@ -39,6 +41,20 @@ app.get('/rest/ticket/:id', (req, res) => {
   }
 });
 
+
+
+// In-memory array to store tickets (for demo purposes)
+let tickets = [];
+
+// Read data from file on server start-up
+fs.readFile('mydata.json', 'utf8', (err, data) => {
+  if (err) {
+    console.error(`Failed to read data from file: ${err}`);
+  } else {
+    tickets = JSON.parse(data);
+    console.log(`Loaded ${tickets.length} tickets from file.`);
+  }
+});
 
 class Ticket {
   constructor(id, type, subject, description, priority, status, recipient, submitter, assignee_id, follower_ids, tags) {
@@ -82,7 +98,7 @@ app.post('/rest/ticket', (req, res) => {
   tickets.push(newTicket);
 
   // Write the updated `tickets` array to file
-  fs.writeFile('mydata.txt', JSON.stringify(tickets), (err) => {
+  fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
     if (err) {
       console.error(`Failed to write data to file: ${err}`);
       res.status(500).send('Failed to write data to file');
@@ -91,7 +107,6 @@ app.post('/rest/ticket', (req, res) => {
     }
   });
 });
-
 
 
 app.get('/', function(req, res) {
