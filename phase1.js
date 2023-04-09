@@ -1,50 +1,6 @@
 const express = require('express');
-const bodyParser=require('body-parser');
-const app = express();
-const port = 3000;
-var fs = require("fs");
-
-
-app.listen(port);
-console.log('Server started at http://localhost:' + port);
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-// Define routes
-//rest makes it more specific to the 'ticket' resourse
-// app.get('/rest/list', (req, res) => {
-//   fs.readFile('mydata.json', 'utf8', (err, data) => {
-//     if (err) {
-//       console.error(`Failed to read data from file: ${err}`);
-//       res.status(500).send('Failed to read data from file');
-//     }
-//     else {
-//       console.log("File read successfully\n");
-//       console.log("Contents of file now:\n");
-//       res.send(data);
-//     }
-//   });
-// });
-router.get('/rest/list', (req, res) => {
-  // Read the data from the file
-  fs.readFile('mydata.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Failed to read data from file: ${err}`);
-      res.status(500).send('Failed to read data from file');
-    } else {
-      // Parse the data from JSON string to an array of Ticket objects
-      const tickets = JSON.parse(data);
-
-      // Return the list of tickets as JSON
-      res.status(200).send(JSON.stringify(tickets, null, 2));
-    }
-  });
-});
-module.exports = { TicketsController: router };
-
+const router = express.Router();
+const fs = require('fs');
 
 // Define the Ticket class
 class Ticket {
@@ -77,10 +33,24 @@ class Ticket {
   }
 }
 
-// Create a router
-const router = express.Router();
+// GET /rest/list - Get all tickets
+router.get('/rest/list', (req, res) => {
+  // Read the data from the file
+  fs.readFile('mydata.json', 'utf8', (err, data) => {
+    if (err) {
+      console.error(`Failed to read data from file: ${err}`);
+      res.status(500).send('Failed to read data from file');
+    } else {
+      // Parse the data from JSON string to an array of Ticket objects
+      const tickets = JSON.parse(data);
 
-// Endpoint to get a ticket by ID
+      // Return the tickets array as JSON
+      res.json(tickets);
+    }
+  });
+});
+
+// GET /rest/ticket/:id - Get ticket by ID
 router.get('/rest/ticket/:id', (req, res) => {
   // Read the data from the file
   fs.readFile('mydata.json', 'utf8', (err, data) => {
@@ -102,7 +72,7 @@ router.get('/rest/ticket/:id', (req, res) => {
   });
 });
 
-// Endpoint to create a new ticket
+// POST /rest/ticket - Create a new ticket
 router.post('/rest/ticket', (req, res) => {
   // Read the existing tickets from the file
   fs.readFile('mydata.json', 'utf8', (err, data) => {
@@ -127,8 +97,7 @@ router.post('/rest/ticket', (req, res) => {
         req.body.recipient,
         req.body.submitter,
         req.body.assignee_id,
-        req.body.follower_ids || [],
-        req.body.tags || []
+        req.body.follower_ids
       );
 
       // Add the new ticket to the array
@@ -150,7 +119,8 @@ router.post('/rest/ticket', (req, res) => {
 // Export the router
 module.exports = router;
 
-app.get('/', function(req, res) {
+
+router.get('/', function(req, res) {
   const myquery = req.query;
   var ticket = 'Starting... ';
   res.send(ticket);
