@@ -13,35 +13,34 @@ fs.readFile('mydata.json', 'utf8', (err, data) => {
   } else {
     tickets = JSON.parse(data);
     console.log(`Loaded ${tickets.length} tickets`);
+
+    // Endpoint to get all tickets
+    app.get('/rest/list', (req, res) => {
+      res.send(tickets);
+    });
+
+    // Endpoint to get a single ticket by id
+    app.get('/rest/ticket/:id', (req, res) => {
+      const id = parseInt(req.params.id);
+      const ticket = tickets.find((t) => t.id === id);
+
+      if (!ticket) {
+        res.status(404).send('Ticket not found');
+      } else {
+        res.send(ticket);
+      }
+    });
+
+    // Endpoint to create a new ticket
+    app.post('/rest/ticket', express.json(), (req, res) => {
+      const ticket = req.body;
+      ticket.id = Date.now(); // Assign a unique id
+      tickets.push(ticket);
+      console.log(`Created ticket with id ${ticket.id}`);
+      res.send(ticket);
+    });
   }
 });
-
-// Endpoint to get all tickets
-app.get('/rest/list', (req, res) => {
-  res.send(tickets);
-});
-
-// Endpoint to get a single ticket by id
-app.get('/rest/ticket/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const ticket = tickets.find((t) => t.id === id);
-
-  if (!ticket) {
-    res.status(404).send('Ticket not found');
-  } else {
-    res.send(ticket);
-  }
-});
-
-// Endpoint to create a new ticket
-app.post('/rest/ticket', express.json(), (req, res) => {
-  const ticket = req.body;
-  ticket.id = Date.now(); // Assign a unique id
-  tickets.push(ticket);
-  console.log(`Created ticket with id ${ticket.id}`);
-  res.send(ticket);
-});
-
 
 // Start the server
 app.listen(PORT, () => {
