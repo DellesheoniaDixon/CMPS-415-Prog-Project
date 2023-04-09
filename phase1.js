@@ -1,86 +1,133 @@
 const express = require('express');
-const router = express.Router();
 const fs = require('fs');
+const path = require('path');
 
-class Ticket {
-  constructor(id, type, subject, description, priority, status, recipient, submitter, assignee_id, follower_ids, tags) {
-    this.id = id;
-    this.type = type;
-    this.subject = subject;
-    this.description = description;
-    this.priority = priority;
-    this.status = status;
-    this.recipient = recipient;
-    this.submitter = submitter;
-    this.assignee_id = assignee_id;
-    this.follower_ids = follower_ids;
-    this.tags = tags;
-    this.created_at = new Date().toISOString();
-    this.updated_at = new Date().toISOString();
+const filePath = './mydata.json';
+
+class TicketsController {
+  constructor() {
+    this.router = express.Router();
+    this.router.get('/rest/list', this.getList.bind(this));
+    this.router.get('/rest/ticket/:id', this.getTicket.bind(this));
+    this.router.post('/rest/ticket', this.createTicket.bind(this));
   }
-}
 
-router.get('/rest/list', (req, res) => {
-  fs.readFile('mydata.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Failed to read data from file: ${err}`);
-      res.status(500).send('Failed to read data from file');
-    } else {
-      const tickets = JSON.parse(data);
-      res.json(tickets);
-    }
-  });
-});
+  getTickets() {
+    const rawData = fs.readFileSync(path.resolve(__dirname, filePath));
+    const jsonData = JSON.parse(rawData.toString());
+    return jsonData.map((data) => ({
+      id: data.id,
+      created_at: data.created_at,
+      updated_at: data.updated_at,
+      type: data.type,
+      subject: data.subject,
+      description: data.description,
+      priority: data.priority,
+      status: data.status,
+      recipient: data.recipient,
+      submitter: data.submitter,
+      assignee_id: data.assignee_id,
+      follower_ids: data.follower_ids,
+      tags: data.tags,
+    }));
+  }
 
-router.get('/rest/ticket/:id', (req, res) => {
-  fs.readFile('mydata.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Failed to read data from file: ${err}`);
-      res.status(500).send('Failed to read data from file');
-    } else {
-      const tickets = JSON.parse(data);
-      const ticket = tickets.find((x) => x.id === Number(req.params.id));
-      return ticket
-        ? res.status(200).send(JSON.stringify(ticket, null, 2))
-        : res.status(404).send(`Ticket with ID ${req.params.id} not found.`);
-    }
-  });
-});
+  getNextId(tickets) {
+    return tickets.reduce((maxId, ticket) => {
+      return Math.max(maxId, ticket.id) + 1;
+    }, 1);
+  }
 
-router.post('/rest/ticket', (req, res) => {
-  fs.readFile('mydata.json', 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Failed to read data from file: ${err}`);
-      res.status(500).send('Failed to read data from file');
-    } else {
-      let tickets = JSON.parse(data);
-      const newId = tickets.length + 1;
-      const newTicket = new Ticket(
-        newId,
-        req.body.type,
-        req.body.subject,
-        req.body.description,
-        req.body.priority,
-        req.body.status,
-        req.body.recipient,
-        req.body.submitter,
-        req.body.assignee_id,
-        req.body.follower_ids
-      );
-      tickets.push(newTicket);
-      fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-        if (err) {
-          console.error(`Failed to write data to file: ${err}`);
-          res.status(500).send('Failed to write data to file');
-        } else {
-          res.status(201).json(newTicket);
-        }
+  validateTicket(ticket) {
+    const requiredProperties = [
+      'type',
+      'subject',
+      'description',
+      'priority',
+      'status',
+      'recipient',
+      'submitter',
+      'assignee_id',
+    ];
+
+    const errorMessages = requiredProperties
+      .filter((property) => !ticket[property])
+      .map(this.getRequiredText);
+
+    return {
+      hasErrors: errorMessages.length > 0,
+      errorMessages,
+    };
+  }
+
+  getRequiredText(property) {
+    return `${property} is required`;
+  }
+
+  async writeTicket(ticket) {
+    const tickets = this.getTickets();
+
+    const nextTicketId = this.getNextId(tickets);
+    ticket.id = nextTicketId;
+    ticket.created_at = new Date().toISOString();
+    ticket.updated_at = new Date().toISOString();
+
+    const validationResult = this.validateTicket(ticket);
+
+    if (validationResult.hasErrors) {
+      return Promise.resolve({
+        data: '',
+        validationResult: validationResult,
       });
     }
-  });
-});
 
-module.exports = router;
+    tickets.push(ticket);
+    const updatedContent = JSON.stringify(tickets, null, 2);
+
+    try {
+      fs.writeFileSync(path.resolve(__dirname, filePath), updatedContent);
+      return Promise.resolve({
+        data: JSON.stringify(ticket, null, 2),
+      });
+    } catch (err) {
+      console.log(err);
+      return Promise.resolve({
+        data: '',
+        validationResult: {
+          hasErrors: true,
+          errorMessages: ['Failed to write ticket to file'],
+        },
+      });
+    }
+  }
+
+  async getList(req, res) {
+    const tickets = this.getTickets();
+    return res.status(200).send(JSON.stringify(tickets, null, 2));
+  }
+
+  async createTicket(req, res) {
+    const response = await this.writeTicket(req.body);
+
+    if (response.validationResult?.hasErrors) {
+      return res
+        .status(400)
+        .send(JSON.stringify(response.validationResult.errorMessages, null, 2));
+    }
+
+    return res.status(201).send(response.data);
+  }
+
+  async getTicket(req, res) {
+    const tickets = this.getTickets();
+
+    const ticket = tickets.find(function (x) {
+      return x.id === Number(req.params.id);
+    });
+
+    return ticket
+      ? res.status(200).send(JSON.stringify(ticket, null, 2))
+      : res.status
 
 // router.get('/', function(req, res) {
 //   const myquery = req.query;
