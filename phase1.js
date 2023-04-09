@@ -12,6 +12,7 @@ fs.readFile('mydata.json', 'utf8', (err, data) => {
     console.error(err);
   } else {
     tickets = JSON.parse(data);
+    console.log(`Loaded ${tickets.length} tickets`);
   }
 });
 
@@ -37,9 +38,10 @@ app.post('/rest/ticket', express.json(), (req, res) => {
   const ticket = req.body;
   ticket.id = Date.now(); // Assign a unique id
   tickets.push(ticket);
-
+  console.log(`Created ticket with id ${ticket.id}`);
   res.send(ticket);
 });
+
 
 // Start the server
 app.listen(PORT, () => {
