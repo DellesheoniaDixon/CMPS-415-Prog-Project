@@ -4,17 +4,29 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-let tickets = [];
-
-// Load initial tickets from mydata.json
-fs.readFile('mydata.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-  } else {
-    tickets = JSON.parse(data);
-    console.log(`Loaded ${tickets.length} tickets`);
+let tickets = [
+  {
+    "id": 35436,
+    "created_at": "2015-07-20T22:55:29Z",
+    "updated_at": "2016-05-05T10:38:52Z",
+    "type": "incident",
+    "subject": "MFP not working right",
+    "description": "PC Load Letter? What does that even mean???",
+    "priority": "med",
+    "status": "open",
+    "recipient": "support_example@selu.edu",
+    "submitter": "Michael_bolton@selu.edu",
+    "assignee_id": 235323,
+    "follower_ids": [
+        235323,
+        234
+    ],
+    "tags": [
+        "enterprise",
+        "printers"
+    ]
   }
-});
+];
 
 // Endpoint to get all tickets
 app.get('/rest/list', (req, res) => {
