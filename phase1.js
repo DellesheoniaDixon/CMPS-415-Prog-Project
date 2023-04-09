@@ -15,22 +15,73 @@ app.use(bodyParser.json());
 
 // Define routes
 //rest makes it more specific to the 'ticket' resourse
-app.get('/rest/list', (req, res) => {
+// app.get('/rest/list', (req, res) => {
+//   fs.readFile('mydata.json', 'utf8', (err, data) => {
+//     if (err) {
+//       console.error(`Failed to read data from file: ${err}`);
+//       res.status(500).send('Failed to read data from file');
+//     }
+//     else {
+//       console.log("File read successfully\n");
+//       console.log("Contents of file now:\n");
+//       res.send(data);
+//     }
+//   });
+// });
+router.get('/rest/list', (req, res) => {
+  // Read the data from the file
   fs.readFile('mydata.json', 'utf8', (err, data) => {
     if (err) {
       console.error(`Failed to read data from file: ${err}`);
       res.status(500).send('Failed to read data from file');
-    }
-    else {
-      console.log("File read successfully\n");
-      console.log("Contents of file now:\n");
-      res.send(data);
+    } else {
+      // Parse the data from JSON string to an array of Ticket objects
+      const tickets = JSON.parse(data);
+
+      // Return the list of tickets as JSON
+      res.status(200).send(JSON.stringify(tickets, null, 2));
     }
   });
 });
+module.exports = { TicketsController: router };
 
-// Define endpoint for getting ticket by ID
-app.get('/rest/ticket/id', (req, res) => {
+
+// Define the Ticket class
+class Ticket {
+  constructor(
+    id,
+    type,
+    subject,
+    description,
+    priority,
+    status,
+    recipient,
+    submitter,
+    assignee_id,
+    follower_ids,
+    tags
+  ) {
+    this.id = id;
+    this.type = type;
+    this.subject = subject;
+    this.description = description;
+    this.priority = priority;
+    this.status = status;
+    this.recipient = recipient;
+    this.submitter = submitter;
+    this.assignee_id = assignee_id;
+    this.follower_ids = follower_ids;
+    this.tags = tags;
+    this.created_at = new Date().toISOString();
+    this.updated_at = new Date().toISOString();
+  }
+}
+
+// Create a router
+const router = express.Router();
+
+// Endpoint to get a ticket by ID
+router.get('/rest/ticket/:id', (req, res) => {
   // Read the data from the file
   fs.readFile('mydata.json', 'utf8', (err, data) => {
     if (err) {
@@ -51,7 +102,8 @@ app.get('/rest/ticket/id', (req, res) => {
   });
 });
 
-app.post('/rest/ticket', (req, res) => {
+// Endpoint to create a new ticket
+router.post('/rest/ticket', (req, res) => {
   // Read the existing tickets from the file
   fs.readFile('mydata.json', 'utf8', (err, data) => {
     if (err) {
@@ -95,7 +147,8 @@ app.post('/rest/ticket', (req, res) => {
   });
 });
 
-
+// Export the router
+module.exports = router;
 
 app.get('/', function(req, res) {
   const myquery = req.query;
