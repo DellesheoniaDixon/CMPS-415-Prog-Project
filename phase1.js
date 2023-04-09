@@ -120,11 +120,11 @@ router.post('/rest/ticket', (req, res) => {
 module.exports = router;
 
 
-router.get('/', function(req, res) {
-  const myquery = req.query;
-  var ticket = 'Starting... ';
-  res.send(ticket);
-});
+// router.get('/', function(req, res) {
+//   const myquery = req.query;
+//   var ticket = 'Starting... ';
+//   res.send(ticket);
+// });
 
 
 
