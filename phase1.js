@@ -6,13 +6,11 @@ const PORT = process.env.PORT || 3000;
 
 let tickets = [];
 
-// Read data from mydata.json
+// Read the data from mydata.json and initialize the tickets array
 fs.readFile('mydata.json', (err, data) => {
-  if (err) {
-    console.error(err);
-  } else {
-    tickets = JSON.parse(data);
-  }
+  if (err) throw err;
+  tickets = JSON.parse(data);
+  console.log('Tickets data loaded from mydata.json');
 });
 
 // Endpoint to get all tickets
@@ -38,16 +36,6 @@ app.post('/rest/ticket', express.json(), (req, res) => {
   ticket.id = Date.now(); // Assign a unique id
   tickets.push(ticket);
   console.log(`Created ticket with id ${ticket.id}`);
-
-  // Write updated data back to mydata.json
-  fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log('Data written to file');
-    }
-  });
-
   res.send(ticket);
 });
 
@@ -61,16 +49,6 @@ app.delete('/rest/ticket/:id', (req, res) => {
   } else {
     tickets.splice(index, 1);
     console.log(`Deleted ticket with id ${id}`);
-
-    // Write updated data back to mydata.json
-    fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Data written to file');
-      }
-    });
-
     res.send(`Deleted ticket with id ${id}`);
   }
 });
@@ -87,16 +65,6 @@ app.put('/rest/ticket/:id', express.json(), (req, res) => {
     updatedTicket.id = id;
     tickets[index] = updatedTicket;
     console.log(`Updated ticket with id ${id}`);
-
-    // Write updated data back to mydata.json
-    fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-      if (err) {
-        console.error(err);
-      } else {
-        console.log('Data written to file');
-      }
-    });
-
     res.send(updatedTicket);
   }
 });
