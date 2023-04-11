@@ -4,29 +4,16 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-let tickets = [
-  {
-    "id": 35436,
-    "created_at": "2015-07-20T22:55:29Z",
-    "updated_at": "2016-05-05T10:38:52Z",
-    "type": "incident",
-    "subject": "MFP not working right",
-    "description": "PC Load Letter? What does that even mean???",
-    "priority": "med",
-    "status": "open",
-    "recipient": "support_example@selu.edu",
-    "submitter": "Michael_bolton@selu.edu",
-    "assignee_id": 235323,
-    "follower_ids": [
-        235323,
-        234
-    ],
-    "tags": [
-        "enterprise",
-        "printers"
-    ]
+let tickets = [];
+
+// Read data from mydata.json
+fs.readFile('mydata.json', (err, data) => {
+  if (err) {
+    console.error(err);
+  } else {
+    tickets = JSON.parse(data);
   }
-];
+});
 
 // Endpoint to get all tickets
 app.get('/rest/list', (req, res) => {
@@ -51,6 +38,16 @@ app.post('/rest/ticket', express.json(), (req, res) => {
   ticket.id = Date.now(); // Assign a unique id
   tickets.push(ticket);
   console.log(`Created ticket with id ${ticket.id}`);
+
+  // Write updated data back to mydata.json
+  fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
+    if (err) {
+      console.error(err);
+    } else {
+      console.log('Data written to file');
+    }
+  });
+
   res.send(ticket);
 });
 
@@ -64,6 +61,16 @@ app.delete('/rest/ticket/:id', (req, res) => {
   } else {
     tickets.splice(index, 1);
     console.log(`Deleted ticket with id ${id}`);
+
+    // Write updated data back to mydata.json
+    fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('Data written to file');
+      }
+    });
+
     res.send(`Deleted ticket with id ${id}`);
   }
 });
@@ -80,10 +87,19 @@ app.put('/rest/ticket/:id', express.json(), (req, res) => {
     updatedTicket.id = id;
     tickets[index] = updatedTicket;
     console.log(`Updated ticket with id ${id}`);
+
+    // Write updated data back to mydata.json
+    fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        console.log('Data written to file');
+      }
+    });
+
     res.send(updatedTicket);
   }
 });
-
 
 // Start the server
 app.listen(PORT, () => {
