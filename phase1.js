@@ -54,6 +54,37 @@ app.post('/rest/ticket', express.json(), (req, res) => {
   res.send(ticket);
 });
 
+// Endpoint to delete a ticket by id
+app.delete('/rest/ticket/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = tickets.findIndex((t) => t.id === id);
+
+  if (index === -1) {
+    res.status(404).send('Ticket not found');
+  } else {
+    tickets.splice(index, 1);
+    console.log(`Deleted ticket with id ${id}`);
+    res.send(`Deleted ticket with id ${id}`);
+  }
+});
+
+// Endpoint to update a ticket by id
+app.put('/rest/ticket/:id', express.json(), (req, res) => {
+  const id = parseInt(req.params.id);
+  const index = tickets.findIndex((t) => t.id === id);
+
+  if (index === -1) {
+    res.status(404).send('Ticket not found');
+  } else {
+    const updatedTicket = req.body;
+    updatedTicket.id = id;
+    tickets[index] = updatedTicket;
+    console.log(`Updated ticket with id ${id}`);
+    res.send(updatedTicket);
+  }
+});
+
+
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
