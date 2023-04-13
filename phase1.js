@@ -120,7 +120,7 @@ app.delete('/rest/ticket/:id', async (req, res) => {
 
 // Error handling middleware
 app.use(function(err, req, res, next) {
-  console.error(err.stack
+  console.error(err.stack)
 
 
 // Start the server
