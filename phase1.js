@@ -1,116 +1,76 @@
 const express = require('express');
 const fs = require('fs');
-
 const app = express();
-const PORT = process.env.PORT || 3000;
+const port = 3000;
 
-// Read data from JSON file
-fs.readFile('mydata.json', (err, data) => {
-  if (err) {
-    console.error(err);
-  } else {
-    const tickets = JSON.parse(data);
+const FILE_PATH = './mydata.json';
 
-    // Endpoint to get all tickets
-    app.get('/rest/list', (req, res) => {
-      res.send(tickets);
-    });
+// Middleware to parse JSON data
+app.use(express.json());
 
-    // Endpoint to get a single ticket by id
-
-app.get('/rest/ticket/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  fs.readFile('mydata.json', (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(500).send('Error retrieving tickets');
-    } else {
-      const tickets = JSON.parse(data);
-      const ticket = tickets.find((t) => t.id === id);
-
-      if (!ticket) {
-        res.status(404).send('Ticket not found');
-      } else {
-        res.send(ticket);
-      }
-    }
-  });
+// GET all items
+app.get('/rest/tickets', (req, res) => {
+  const data = JSON.parse(fs.readFileSync(FILE_PATH));
+  res.send(data);
 });
 
-    // Endpoint to create a new ticket
-    app.post('/rest/ticket', express.json(), (req, res) => {
-      const ticket = req.body;
-      ticket.id = Date.now(); // Assign a unique id
-      tickets.push(ticket);
-      console.log(`Created ticket with id ${ticket.id}`);
+// GET item by ID
+app.get('/rest/tickets/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const data = JSON.parse(fs.readFileSync(FILE_PATH));
+  const item = data.find((i) => i.id === id);
 
-      // Write updated data to JSON file
-      fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-        if (err) {
-          console.error(err);
-        } else {
-          console.log('Data written to file');
-        }
-      });
-
-      res.send(ticket);
-    });
-
-    // Endpoint to delete a ticket by id
-    app.delete('/rest/ticket/:id', (req, res) => {
-      const id = parseInt(req.params.id);
-      const index = tickets.findIndex((t) => t.id === id);
-
-      if (index === -1) {
-        res.status(404).send('Ticket not found');
-      } else {
-        tickets.splice(index, 1);
-        console.log(`Deleted ticket with id ${id}`);
-
-        // Write updated data to JSON file
-        fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-          if (err) {
-            console.error(err);
-          } else {
-            console.log('Data written to file');
-          }
-        });
-
-        res.send(`Deleted ticket with id ${id}`);
-      }
-    });
-
-    // Endpoint to update a ticket by id
-    app.put('/rest/ticket/:id', express.json(), (req, res) => {
-      const id = parseInt(req.params.id);
-      const index = tickets.findIndex((t) => t.id === id);
-
-      if (index === -1) {
-        res.status(404).send('Ticket not found');
-      } else {
-        const updatedTicket = req.body;
-        updatedTicket.id = id;
-        tickets[index] = updatedTicket;
-        console.log(`Updated ticket with id ${id}`);
-
-        // Write updated data to JSON file
-        fs.writeFile('mydata.json', JSON.stringify(tickets), (err) => {
-          if (err) {
-            console.error(err);
-          } else {
-            console.log('Data written to file');
-          }
-        });
-      }
-
-      res.send(updatedTicket);
-    });
-
-    // Start the server
-    app.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-    });
+  if (!item) {
+    res.status(404).send('Item not found');
+  } else {
+    res.send(item);
   }
+});
+
+// POST a new item
+app.post('/rest/tickets', (req, res) => {
+  const data = JSON.parse(fs.readFileSync(FILE_PATH));
+  const newItem = req.body;
+  newItem.id = data.length + 1;
+  data.push(newItem);
+  fs.writeFileSync(FILE_PATH, JSON.stringify(data));
+  res.send(newItem);
+});
+
+// PUT (update) an existing item by ID
+app.put('/rest/tickets/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const data = JSON.parse(fs.readFileSync(FILE_PATH));
+  const index = data.findIndex((i) => i.id === id);
+
+  if (index === -1) {
+    res.status(404).send('Item not found');
+  } else {
+    const updatedItem = req.body;
+    updatedItem.id = id;
+    data[index] = updatedItem;
+    fs.writeFileSync(FILE_PATH, JSON.stringify(data));
+    res.send(updatedItem);
+  }
+});
+
+// DELETE an item by ID
+app.delete('/rest/tickets/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  const data = JSON.parse(fs.readFileSync(FILE_PATH));
+  const index = data.findIndex((i) => i.id === id);
+
+  if (index === -1) {
+    res.status(404).send('Item not found');
+  } else {
+    const deletedItem = data.splice(index, 1)[0];
+    fs.writeFileSync(FILE_PATH, JSON.stringify(data));
+    res.send(deletedItem);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });
 
 
