@@ -90,12 +90,20 @@ fs.readFile('mydata.json', (err, data) => {
             console.error(err);
           } else {
             console.log('Data written to file');
+          }
+        });
+      }
 
+      res.send(updatedTicket);
+    });
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+    // Start the server
+    app.listen(PORT, () => {
+      console.log(`Server listening on port ${PORT}`);
+    });
+  }
 });
+
 
 // app.get('/', function(req, res) {
 //   const myquery = req.query;
