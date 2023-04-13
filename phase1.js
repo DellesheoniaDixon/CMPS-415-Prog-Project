@@ -4,7 +4,7 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const FILE_PATH = './mydata.json';
+const FILE_PATH = __dirname + '/mydata.json';
 
 // Read the initial data from file
 let tickets = JSON.parse(fs.readFileSync(FILE_PATH));
@@ -71,6 +71,12 @@ app.delete('/rest/ticket/:id', (req, res) => {
 
     res.send(deletedTicket);
   }
+});
+
+// Error handling middleware
+app.use(function(err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
 
 // Start the server
