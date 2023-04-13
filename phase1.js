@@ -17,8 +17,15 @@ fs.readFile('mydata.json', (err, data) => {
     });
 
     // Endpoint to get a single ticket by id
-    app.get('/rest/ticket/:id', (req, res) => {
-      const id = parseInt(req.params.id);
+
+app.get('/rest/ticket/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  fs.readFile('mydata.json', (err, data) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error retrieving tickets');
+    } else {
+      const tickets = JSON.parse(data);
       const ticket = tickets.find((t) => t.id === id);
 
       if (!ticket) {
@@ -26,7 +33,9 @@ fs.readFile('mydata.json', (err, data) => {
       } else {
         res.send(ticket);
       }
-    });
+    }
+  });
+});
 
     // Endpoint to create a new ticket
     app.post('/rest/ticket', express.json(), (req, res) => {
