@@ -37,7 +37,7 @@ app.post('/rest/ticket', (req, res) => {
   console.log(`Created ticket with id ${ticket.id}`);
 
   // Write the updated data back to the file
-  fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
+//   fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
 
   res.send(ticket);
 });
@@ -53,7 +53,7 @@ app.put('/rest/ticket/:id', (req, res) => {
     tickets[index] = { ...tickets[index], ...req.body };
 
     // Write the updated data back to the file
-    fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
+//     fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
 
     res.send(tickets[index]);
   }
@@ -70,7 +70,7 @@ app.delete('/rest/ticket/:id', (req, res) => {
     const deletedTicket = tickets.splice(index, 1)[0];
 
     // Write the updated data back to the file
-    fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
+//     fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
 
     res.send(deletedTicket);
   }
