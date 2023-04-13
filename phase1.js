@@ -9,6 +9,9 @@ const FILE_PATH = __dirname + '/mydata.json';
 // Read the initial data from file
 let tickets = JSON.parse(fs.readFileSync(FILE_PATH));
 
+// Middleware to parse request bodies
+app.use(express.json());
+
 // Endpoint to get all tickets
 app.get('/rest/list', (req, res) => {
   res.send(tickets);
@@ -27,7 +30,7 @@ app.get('/rest/ticket/:id', (req, res) => {
 });
 
 // Endpoint to create a new ticket
-app.post('/rest/ticket', express.json(), (req, res) => {
+app.post('/rest/ticket', (req, res) => {
   const ticket = req.body;
   ticket.id = Date.now(); // Assign a unique id
   tickets.push(ticket);
@@ -40,14 +43,14 @@ app.post('/rest/ticket', express.json(), (req, res) => {
 });
 
 // Endpoint to update an existing ticket by id
-app.put('/rest/ticket/:id', express.json(), (req, res) => {
+app.put('/rest/ticket/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const index = tickets.findIndex((t) => t.id === id);
 
   if (index === -1) {
     res.status(404).send('Ticket not found');
   } else {
-    tickets[index] = req.body;
+    tickets[index] = { ...tickets[index], ...req.body };
 
     // Write the updated data back to the file
     fs.writeFileSync(FILE_PATH, JSON.stringify(tickets));
