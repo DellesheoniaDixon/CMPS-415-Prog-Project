@@ -4,16 +4,7 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-let tickets = [];
-
-// Read data from the file
-fs.readFile('mydata.json', 'utf8', (err, data) => {
-  if (err) {
-    console.error(err);
-    return;
-  }
-  tickets = JSON.parse(data);
-});
+let tickets = JSON.parse(fs.readFileSync('mydata.json', 'utf8'));
 
 // Endpoint to get all tickets
 app.get('/rest/list', (req, res) => {
@@ -74,7 +65,6 @@ app.delete('/rest/ticket/:id', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
 });
-
 
 // app.get('/', function(req, res) {
 //   const myquery = req.query;
