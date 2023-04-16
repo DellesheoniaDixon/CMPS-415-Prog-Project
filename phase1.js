@@ -4,7 +4,16 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-let tickets = JSON.parse(fs.readFileSync('mydata.json', 'utf8'));
+let tickets = [];
+
+// Read data from the file synchronously
+try {
+  const data = fs.readFileSync('mydata.json', 'utf8');
+  tickets = JSON.parse(data);
+} catch (err) {
+  console.error(err);
+  process.exit(1);
+}
 
 // Endpoint to get all tickets
 app.get('/rest/list', (req, res) => {
