@@ -5,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
-mongoose.connect('mongodb://<username>:<password>@<hostname>:<port>/<database-name>', {
+mongoose.connect('mongodb+srv://dellesheoniadixon2:<password>@ddixonmdb.05vfedo.mongodb.net/?retryWrites=true&w=majority', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
