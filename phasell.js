@@ -1,6 +1,8 @@
+// Import dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 
+const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -16,25 +18,6 @@ mongoose.connect('mongodb+srv://dellesheoniadixon2:k9UyT796OyDNGNlB@ddixonmdb.05
   console.error('Failed to connect to MongoDB:', err);
 });
 
-// Import dependencies
-const express = require('express');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
-
-// Create express app
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-// Connect to MongoDB
-mongoose.connect('mongodb+srv://<username>:<password>@<hostname>/<database-name>', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('Error connecting to MongoDB:', err);
-  process.exit(1);
-});
 
 // Define Ticket schema
 const ticketSchema = new mongoose.Schema({
