@@ -79,8 +79,8 @@ app.put('/rest/ticket/:id', async (req, res) => {
   if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
     const tickets = client.db('Phase-ll').collection('CMPS415');
 
-    // Use $set modifier with an object as the value
-    await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
+    // Use $set modifier with an object as the value, and use _id as the filter
+    await tickets.updateOne({ _id: ticketId }, { $set: updatedTicket });
 
     console.log(`Updated ticket with id ${ticketId}`);
     res.send(`Updated ticket with id ${ticketId}`);
