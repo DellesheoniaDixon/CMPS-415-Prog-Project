@@ -97,7 +97,6 @@ app.put('/rest/ticket/:id', async (req, res) => {
 
 
 
-
 // Define a route for deleting a ticket by id
 app.delete('/rest/ticket/:id', async (req, res) => {
    const ticketId = parseInt(req.params.id); // Parse id as integer
