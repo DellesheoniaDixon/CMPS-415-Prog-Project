@@ -32,7 +32,7 @@ app.get('/rest/list', async (req, res) => {
 
 // Define a route for retrieving a ticket by id
 app.get('/rest/ticket/:id', async (req, res) => {
-  const ticketId = req.params.id;
+  const ticketId = parseFloat(req.params.id); // Parse id as double
   const tickets = client.db('Phase-ll').collection('CMPS415');
 
   // Use findOne() method to find a document by id
