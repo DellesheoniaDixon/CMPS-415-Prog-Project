@@ -70,47 +70,26 @@ app.post('/rest/ticket', async (req, res) => {
   }
 });
 
-// // Define a route for updating a ticket by id
-// app.put('/rest/ticket/:id', async (req, res) => {
-//   const ticketId = req.params.id;
-//   const updatedTicket = req.body;
-
-//   // Confirm that updatedTicket is an object
-//   if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
-//     const tickets = client.db('Phase-ll').collection('CMPS415');
-
-//     // Use $set modifier with an object as the value
-//     await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
-
-//     console.log(`Updated ticket with id ${ticketId}`);
-//     res.send(`Updated ticket with id ${ticketId}`);
-//   } else {
-//     console.log('Updated ticket data is not a valid object');
-//     res.status(400).send('Updated ticket data is not a valid object');
-//   }
-// });
-
 // Define a route for updating a ticket by id
 app.put('/rest/ticket/:id', async (req, res) => {
-  const ticketId = parseInt(req.params.id); // Parse id as integer
-  const updatedTicket = req.body; // Get updated ticket data from request body
-  const tickets = client.db('Phase-ll').collection('CMPS415');
+  const ticketId = req.params.id;
+  const updatedTicket = req.body;
 
-  // Use findOneAndUpdate() method to find and update a document by id
-  const result = await tickets.findOneAndUpdate(
-    { id: ticketId },
-    { $set: updatedTicket }, // Use $set operator to update fields
-    { returnOriginal: false } // Set returnOriginal to false to return updated document
-  );
+  // Confirm that updatedTicket is an object
+  if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
+    const tickets = client.db('Phase-ll').collection('CMPS415');
 
-  if (result.value) {
+    // Use $set modifier with an object as the value
+    await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
+
     console.log(`Updated ticket with id ${ticketId}`);
-    res.send(result.value);
+    res.send(`Updated ticket with id ${ticketId}`);
   } else {
-    console.log(`Ticket with id ${ticketId} not found`);
-    res.status(404).send(`Ticket with id ${ticketId} not found`);
+    console.log('Updated ticket data is not a valid object');
+    res.status(400).send('Updated ticket data is not a valid object');
   }
 });
+
 
 
 
