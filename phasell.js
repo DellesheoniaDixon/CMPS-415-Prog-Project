@@ -70,6 +70,7 @@ app.post('/rest/ticket', async (req, res) => {
   }
 });
 
+
 // Define a route for updating a ticket by id
 app.put('/rest/ticket/:id', async (req, res) => {
   const ticketId = req.params.id;
@@ -79,8 +80,12 @@ app.put('/rest/ticket/:id', async (req, res) => {
   if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
     const tickets = client.db('Phase-ll').collection('CMPS415');
 
-    // Use $set modifier with an object as the value, and use _id as the filter
-    await tickets.updateOne({ _id: ticketId }, { $set: updatedTicket });
+    // Convert ticketId to ObjectId before using as filter
+    const ObjectId = require('mongodb').ObjectId;
+    const filter = { _id: new ObjectId(ticketId) };
+
+    // Use $set modifier with an object as the value, and use filter to update
+    await tickets.updateOne(filter, { $set: updatedTicket });
 
     console.log(`Updated ticket with id ${ticketId}`);
     res.send(`Updated ticket with id ${ticketId}`);
