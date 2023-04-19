@@ -30,76 +30,85 @@ app.get('/rest/list', async (req, res) => {
   res.send(result);
 });
 
-  // Define route handler for fetching ticket by ID
-  app.get('/rest/ticket/:id', async (req, res) => {
-    try {
-      const ticketId = parseInt(req.params.id);
-      const tickets = client.db('Phase-ll').collection('CMPS415');
-      const ticket = await tickets.findOne({ id: ticketId });
-      if (!ticket) {
-        res.status(404).send('Ticket not found');
-      } else {
-        console.log(`Fetched ticket with id ${ticketId}`);
-        res.send(ticket);
-      }
-    } catch (err) {
-      console.error('Failed to fetch ticket:', err);
-      res.status(500).send('Failed to fetch ticket');
-    }
-  });
+// Define a route for retrieving a ticket by id
+app.get('/rest/ticket/:id', async (req, res) => {
+  const ticketId = req.params.id;
+  const tickets = client.db('Phase-ll').collection('CMPS415');
 
+  // Use findOne() method to find a document by id
+  const ticket = await tickets.findOne({ id: ticketId });
 
-// Define route handler for creating tickets
-  app.post('/rest/ticket', async (req, res) => {
-    try {
-      const ticket = req.body;
-      ticket.id = Date.now(); // Assign a unique id
+  if (ticket) {
+    console.log(`Retrieved ticket with id ${ticketId}`);
+    res.send(ticket);
+  } else {
+    console.log(`Ticket with id ${ticketId} not found`);
+    res.status(404).send(`Ticket with id ${ticketId} not found`);
+  }
+});
+
+// Define a route for creating a new ticket
+app.post('/rest/ticket', async (req, res) => {
+  // Confirm that req.body is an object
+  if (typeof req.body === 'object' && !Array.isArray(req.body)) {
+    const ticket = req.body;
+    ticket.id = Date.now(); // Assign a unique id
+
+    // Confirm that ticket is an object
+    if (typeof ticket === 'object' && !Array.isArray(ticket)) {
       const tickets = client.db('Phase-ll').collection('CMPS415');
       await tickets.insertOne(ticket);
       console.log(`Created ticket with id ${ticket.id}`);
       res.send(ticket);
-    } catch (err) {
-      console.error('Failed to create ticket:', err);
-      res.status(500).send('Failed to create ticket');
+    } else {
+      console.log('Ticket data is not a valid object');
+      res.status(400).send('Ticket data is not a valid object');
     }
-  });
+  } else {
+    console.log('Request body is not a valid object');
+    res.status(400).send('Request body is not a valid object');
+  }
+});
+
+// Define a route for updating a ticket by id
+app.put('/rest/ticket/:id', async (req, res) => {
+  const ticketId = req.params.id;
+  const updatedTicket = req.body;
+
+  // Confirm that updatedTicket is an object
+  if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
+    const tickets = client.db('Phase-ll').collection('CMPS415');
+
+    // Use $set modifier with an object as the value
+    await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
+
+    console.log(`Updated ticket with id ${ticketId}`);
+    res.send(`Updated ticket with id ${ticketId}`);
+  } else {
+    console.log('Updated ticket data is not a valid object');
+    res.status(400).send('Updated ticket data is not a valid object');
+  }
+});
 
 
+// Define a route for deleting a ticket by id
+app.delete('/rest/ticket/:id', async (req, res) => {
+  const ticketId = req.params.id;
+  const tickets = client.db('Phase-ll').collection('CMPS415');
+
+  // Use deleteOne() method to delete a document by id
+  const result = await tickets.deleteOne({ id: ticketId });
+
+  if (result.deletedCount === 1) {
+    console.log(`Deleted ticket with id ${ticketId}`);
+    res.send(`Deleted ticket with id ${ticketId}`);
+  } else {
+    console.log(`Ticket with id ${ticketId} not found`);
+    res.status(404).send(`Ticket with id ${ticketId} not found`);
+  }
+});
 
 
-// Define route handler for updating tickets
-  app.put('/rest/ticket/:id', async (req, res) => {
-    try {
-      const ticketId = parseInt(req.params.id);
-      const updatedTicket = req.body;
-      const tickets = client.db('Phase-ll').collection('CMPS415');
-      const result = await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
-      console.log(`Updated ticket with id ${ticketId}`);
-      res.send(result);
-    } catch (err) {
-      console.error('Failed to update ticket:', err);
-      res.status(500).send('Failed to update ticket');
-    }
-  });
-
-
-  // Define route handler for deleting ticket by ID
-  app.delete('/rest/ticket/:id', async (req, res) => {
-    try {
-      const ticketId = parseInt(req.params.id);
-      const tickets = client.db('Phase-ll').collection('CMPS415');
-      const result = await tickets.deleteOne({ id: ticketId });
-      if (result.deletedCount === 0) {
-        res.status(404).send('Ticket not found');
-      } else {
-        console.log(`Deleted ticket with id ${ticketId}`);
-        res.send(`Ticket with id ${ticketId} deleted`);
-      }
-    } catch (err) {
-      console.error('Failed to delete ticket:', err);
-      res.status(500).send('Failed to delete ticket');
-    }
-  });
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
