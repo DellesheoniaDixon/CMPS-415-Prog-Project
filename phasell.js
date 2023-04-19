@@ -70,25 +70,17 @@ app.post('/rest/ticket', async (req, res) => {
   }
 });
 
-// Define a route for updating a ticket by id
+
 app.put('/rest/ticket/:id', async (req, res) => {
   const ticketId = req.params.id;
   const updatedTicket = req.body;
 
   // Confirm that updatedTicket is an object
   if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
-    // Check if ticketId is a valid ObjectId
-    const { ObjectId } = require('mongodb');
-    if (!ObjectId.isValid(ticketId)) {
-      console.log(`Invalid ticketId: ${ticketId}`);
-      res.status(400).send(`Invalid ticketId: ${ticketId}`);
-      return;
-    }
+    const tickets = client.db('Phase-ll').collection('CMPS415');
 
-    const tickets =  client.db('Phase-ll').collection('CMPS415');
-
-    // Convert ticketId to ObjectId before using as filter
-    const filter = { _id: new ObjectId(ticketId) };
+    // Use the id field as the filter
+    const filter = { id: ticketId };
 
     // Use $set modifier with an object as the value, and use filter to update
     await tickets.updateOne(filter, { $set: updatedTicket });
@@ -100,6 +92,7 @@ app.put('/rest/ticket/:id', async (req, res) => {
     res.status(400).send('Updated ticket data is not a valid object');
   }
 });
+
 
 
 
