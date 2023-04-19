@@ -30,58 +30,76 @@ app.get('/rest/list', async (req, res) => {
   res.send(result);
 });
 
-// Endpoint to get a single ticket by id
-app.get('/rest/ticket/:id', async (req, res) => {
-  const id = parseInt(req.params.id);
-  const tickets = client.db('Phase-ll').collection('CMPS415');
-  const ticket = await tickets.findOne({ id: id });
+  // Define route handler for fetching ticket by ID
+  app.get('/rest/ticket/:id', async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const tickets = client.db('Phase-ll').collection('CMPS415');
+      const ticket = await tickets.findOne({ id: ticketId });
+      if (!ticket) {
+        res.status(404).send('Ticket not found');
+      } else {
+        console.log(`Fetched ticket with id ${ticketId}`);
+        res.send(ticket);
+      }
+    } catch (err) {
+      console.error('Failed to fetch ticket:', err);
+      res.status(500).send('Failed to fetch ticket');
+    }
+  });
 
-  if (!ticket) {
-    res.status(404).send('Ticket not found');
-  } else {
-    res.send(ticket);
-  }
-});
 
-// Endpoint to create a new ticket
-app.post('/rest/ticket', async (req, res) => {
-  const ticket = req.body;
-  ticket.id = Date.now(); // Assign a unique id
-  const tickets = client.db('Phase-ll').collection('CMPS415');
-  await tickets.insertOne(ticket);
-  console.log(`Created ticket with id ${ticket.id}`);
-  res.send(ticket);
-});
+// Define route handler for creating tickets
+  app.post('/rest/ticket', async (req, res) => {
+    try {
+      const ticket = req.body;
+      ticket.id = Date.now(); // Assign a unique id
+      const tickets = client.db('Phase-ll').collection('CMPS415');
+      await tickets.insertOne(ticket);
+      console.log(`Created ticket with id ${ticket.id}`);
+      res.send(ticket);
+    } catch (err) {
+      console.error('Failed to create ticket:', err);
+      res.status(500).send('Failed to create ticket');
+    }
+  });
 
-// Endpoint to update a ticket by id
-app.put('/rest/ticket/:id', async (req, res) => {
-  const id = parseInt(req.params.id);
-  const update = req.body;
-  const tickets = client.db('Phase-ll').collection('CMPS415');
-  const result = await tickets.updateOne({ id: id }, { $set: update });
 
-  if (result.modifiedCount === 0) {
-    res.status(404).send('Ticket not found');
-  } else {
-    console.log(`Updated ticket with id ${id}`);
-    res.send('Ticket updated successfully');
-  }
-});
 
-// Endpoint to delete a ticket by id
-app.delete('/rest/ticket/:id', async (req, res) => {
-  const id = parseInt(req.params.id);
-  const tickets = client.db('Phase-ll').collection('CMPS415');
-  const result = await tickets.deleteOne({ id: id });
 
-  if (result.deletedCount === 0) {
-    res.status(404).send('Ticket not found');
-  } else {
-    console.log(`Deleted ticket with id ${id}`);
-    res.send('Ticket deleted successfully');
-  }
-});
+// Define route handler for updating tickets
+  app.put('/rest/ticket/:id', async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const updatedTicket = req.body;
+      const tickets = client.db('Phase-ll').collection('CMPS415');
+      const result = await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
+      console.log(`Updated ticket with id ${ticketId}`);
+      res.send(result);
+    } catch (err) {
+      console.error('Failed to update ticket:', err);
+      res.status(500).send('Failed to update ticket');
+    }
+  });
 
+
+  // Define route handler for deleting ticket by ID
+  app.delete('/rest/ticket/:id', async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const tickets = client.db('Phase-ll').collection('CMPS415');
+      const result = await tickets.deleteOne({ id: ticketId });
+      if (result.deletedCount === 0) {
+        res.status(404).send('Ticket not found');
+      } else {
+        console.log(`Deleted ticket with id ${ticketId}`);
+        res.send(`Ticket with id ${ticketId} deleted`);
+      }
+    } catch (err) {
+      console.error('Failed to delete ticket:', err);
+      res.status(500).send('Failed to delete ticket');
+    }
+  });
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
