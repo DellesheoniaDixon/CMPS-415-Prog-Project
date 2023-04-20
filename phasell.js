@@ -70,35 +70,35 @@ app.post('/rest/ticket', async (req, res) => {
   }
 });
 
+// // Endpoint to update a ticket by id
+// app.put('/rest/ticket/:id', async (req, res) => {
+//   const id = parseInt(req.params.id);
+//   const update = req.body;
+//   const tickets = client.db('Phase-ll').collection('CMPS415');
+//   const result = await tickets.updateOne({ id: id }, { $set: update });
 
-//Define a route for updating a ticket
-app.put('/rest/ticket/:id', async (req, res) => {
-  const ticketId = req.params.id; // Parse ticket ID from request parameters
-  const updatedTicket = req.body; // Updated ticket data from request body
+//   if (result.modifiedCount === 0) {
+//     res.status(404).send('Ticket not found');
+//   } else {
+//     console.log(`Updated ticket with id ${id}`);
+//     res.send('Ticket updated successfully');
+//   }
+// });
 
-  // Confirm that updatedTicket is an object
-  if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
-    const tickets = client.db('Phase-ll').collection('CMPS415');
-
-    // Use the id field as the filter, as a string
-    const filter = { id: ticketId };
-
-    // Use $set modifier with an object as the value, and use filter to update
-    const result = await tickets.updateOne(filter, { $set: updatedTicket });
-
-    if (result.matchedCount === 1) {
+  // Define route handler for updating tickets
+  app.put('/rest/ticket/:id', async (req, res) => {
+    try {
+      const ticketId = parseInt(req.params.id);
+      const updatedTicket = req.body;
+      const tickets = client.db('Phase-ll').collection('CMPS415');
+      const result = await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
       console.log(`Updated ticket with id ${ticketId}`);
-      res.send(`Updated ticket with id ${ticketId}`);
-    } else {
-      console.log(`Ticket with id ${ticketId} not found`);
-      res.status(404).send(`Ticket with id ${ticketId} not found`);
+      res.send(result);
+    } catch (err) {
+      console.error('Failed to update ticket:', err);
+      res.status(500).send('Failed to update ticket');
     }
-  } else {
-    console.log('Updated ticket data is not a valid object');
-    res.status(400).send('Updated ticket data is not a valid object');
-  }
-});
-
+  });
 
 
 
