@@ -71,6 +71,7 @@ app.post('/rest/ticket', async (req, res) => {
 });
 
 
+//Define a route for updating a ticket
 app.put('/rest/ticket/:id', async (req, res) => {
   const ticketId = req.params.id;
   const updatedTicket = req.body;
@@ -83,10 +84,15 @@ app.put('/rest/ticket/:id', async (req, res) => {
     const filter = { id: ticketId };
 
     // Use $set modifier with an object as the value, and use filter to update
-    await tickets.updateOne(filter, { $set: updatedTicket });
+    const result = await tickets.updateOne(filter, { $set: updatedTicket });
 
-    console.log(`Updated ticket with id ${ticketId}`);
-    res.send(`Updated ticket with id ${ticketId}`);
+    if (result.matchedCount === 1) {
+      console.log(`Updated ticket with id ${ticketId}`);
+      res.send(`Updated ticket with id ${ticketId}`);
+    } else {
+      console.log(`Ticket with id ${ticketId} not found`);
+      res.status(404).send(`Ticket with id ${ticketId} not found`);
+    }
   } else {
     console.log('Updated ticket data is not a valid object');
     res.status(400).send('Updated ticket data is not a valid object');
