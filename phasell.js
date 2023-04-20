@@ -73,14 +73,14 @@ app.post('/rest/ticket', async (req, res) => {
 
 //Define a route for updating a ticket
 app.put('/rest/ticket/:id', async (req, res) => {
-  const ticketId = Number(req.params.id); // Parse as number
+  const ticketId = req.params.id; // Parse as string
   const updatedTicket = req.body;
 
   // Confirm that updatedTicket is an object
   if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
     const tickets = client.db('Phase-ll').collection('CMPS415');
 
-    // Use the id field as the filter, as a number
+    // Use the id field as the filter, as a string
     const filter = { id: ticketId };
 
     // Use $set modifier with an object as the value, and use filter to update
