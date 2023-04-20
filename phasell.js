@@ -70,7 +70,7 @@ app.post('/rest/ticket', async (req, res) => {
   }
 });
 
-
+//Define a route to update a ticket
 app.put('/rest/ticket/:id', async (req, res) => {
   try {
     const ticketId = parseInt(req.params.id);
