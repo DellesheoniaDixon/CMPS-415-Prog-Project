@@ -70,35 +70,21 @@ app.post('/rest/ticket', async (req, res) => {
   }
 });
 
-// // Endpoint to update a ticket by id
-// app.put('/rest/ticket/:id', async (req, res) => {
-//   const id = parseInt(req.params.id);
-//   const update = req.body;
-//   const tickets = client.db('Phase-ll').collection('CMPS415');
-//   const result = await tickets.updateOne({ id: id }, { $set: update });
 
-//   if (result.modifiedCount === 0) {
-//     res.status(404).send('Ticket not found');
-//   } else {
-//     console.log(`Updated ticket with id ${id}`);
-//     res.send('Ticket updated successfully');
-//   }
-// });
-
-  // Define route handler for updating tickets
-  app.put('/rest/ticket/:id', async (req, res) => {
-    try {
-      const ticketId = parseInt(req.params.id);
-      const updatedTicket = req.body;
-      const tickets = client.db('Phase-ll').collection('CMPS415');
-      const result = await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
-      console.log(`Updated ticket with id ${ticketId}`);
-      res.send(result);
-    } catch (err) {
-      console.error('Failed to update ticket:', err);
-      res.status(500).send('Failed to update ticket');
-    }
-  });
+app.put('/rest/ticket/:id', async (req, res) => {
+  try {
+    const ticketId = parseInt(req.params.id);
+    const updatedTicket = req.body;
+    delete updatedTicket._id; // Remove _id field from updated ticket data
+    const tickets = client.db('Phase-ll').collection('CMPS415');
+    const result = await tickets.updateOne({ id: ticketId }, { $set: updatedTicket });
+    console.log(`Updated ticket with id ${ticketId}`);
+    res.send(result);
+  } catch (err) {
+    console.error('Failed to update ticket:', err);
+    res.status(500).send('Failed to update ticket');
+  }
+});
 
 
 
