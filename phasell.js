@@ -72,51 +72,30 @@ app.post('/rest/ticket', async (req, res) => {
 
 
 //Define a route for updating a ticket
-// app.put('/rest/ticket/:id', async (req, res) => {
-//   const ticketId = req.params.id; // Parse ticket ID from request parameters
-//   const updatedTicket = req.body; // Updated ticket data from request body
-
-//   // Confirm that updatedTicket is an object
-//   if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
-//     const tickets = client.db('Phase-ll').collection('CMPS415');
-
-//     // Use the id field as the filter, as a string
-//     const filter = { id: ticketId };
-
-//     // Use $set modifier with an object as the value, and use filter to update
-//     const result = await tickets.updateOne(filter, { $set: updatedTicket });
-
-//     if (result.matchedCount === 1) {
-//       console.log(`Updated ticket with id ${ticketId}`);
-//       res.send(`Updated ticket with id ${ticketId}`);
-//     } else {
-//       console.log(`Ticket with id ${ticketId} not found`);
-//       res.status(404).send(`Ticket with id ${ticketId} not found`);
-//     }
-//   } else {
-//     console.log('Updated ticket data is not a valid object');
-//     res.status(400).send('Updated ticket data is not a valid object');
-//   }
-// });
-
 app.put('/rest/ticket/:id', async (req, res) => {
   const ticketId = req.params.id; // Parse ticket ID from request parameters
-  const updatedTicket = req.body; // Parse updated ticket data from request body
+  const updatedTicket = req.body; // Updated ticket data from request body
 
-  const tickets = client.db('Phase-ll').collection('CMPS415');
+  // Confirm that updatedTicket is an object
+  if (typeof updatedTicket === 'object' && !Array.isArray(updatedTicket)) {
+    const tickets = client.db('Phase-ll').collection('CMPS415');
 
-  // Use the id field as the filter, as a string
-  const filter = { id: ticketId };
+    // Use the id field as the filter, as a string
+    const filter = { id: ticketId };
 
-  // Use $set modifier with an object as the value, and use filter to update
-  const result = await tickets.updateOne(filter, { $set: updatedTicket });
+    // Use $set modifier with an object as the value, and use filter to update
+    const result = await tickets.updateOne(filter, { $set: updatedTicket });
 
-  if (result.matchedCount === 1) {
-    console.log(`Updated ticket with id ${ticketId}`);
-    res.send(`Updated ticket with id ${ticketId}`);
+    if (result.matchedCount === 1) {
+      console.log(`Updated ticket with id ${ticketId}`);
+      res.send(`Updated ticket with id ${ticketId}`);
+    } else {
+      console.log(`Ticket with id ${ticketId} not found`);
+      res.status(404).send(`Ticket with id ${ticketId} not found`);
+    }
   } else {
-    console.log(`Ticket with id ${ticketId} not found`);
-    res.status(404).send(`Ticket with id ${ticketId} not found`);
+    console.log('Updated ticket data is not a valid object');
+    res.status(400).send('Updated ticket data is not a valid object');
   }
 });
 
