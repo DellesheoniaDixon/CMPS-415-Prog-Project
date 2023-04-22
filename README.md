@@ -19,4 +19,15 @@ object of the ticket that was created.
 
 In all cases, you will need to do your own error checking and choose how to handle cases such as “ticket not found” or “incomplete ticket info”.
 
+Phase II – Summary
+This purpose of this phase is to extend the services created in Phase I. The extension will require the addition of a database to store the tickets. Two additional endpoints will need to be developed to update and delete tickets. In this phase, your app must also provide a form for submitting a new ticket. The form should come up as an endpoint access to your app.
+
+You should use a database solution provided by Render.com. 
+
+Summary of Deliverables
+Node Web Service using Node that offers 5 endpoints.
+• DELETE - /rest/ticket/id = "Deletes a ticket record by ID"
+• PUT - /rest/ticket/id = "Updates existing ticket record based on ID"
+![image](https://user-images.githubusercontent.com/89437977/233754098-5e5c2b29-eb77-4da5-ac95-1d8283b8c9ca.png)
+
 
