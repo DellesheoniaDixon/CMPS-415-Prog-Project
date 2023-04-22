@@ -40,7 +40,7 @@ app.get('/form', function (req, res) {
 
 // List all tickets (which are stored in MongoDB)
 app.get('/rest/list', function (req, res) {
-  MongoClient.connect(url, function (err, client) {
+  MongoClient.connect(uri, function (err, client) {
     if (err) throw err;
     console.log('Connected to MongoDB');
     const db = client.db(dbName);
@@ -60,7 +60,7 @@ app.get('/rest/ticket/:id', function (req, res) {
   const inputId = Number(req.params.id);
   console.log("Looking for: " + inputId);
 
-  MongoClient.connect(url, function (err, client) {
+  MongoClient.connect(uri, function (err, client) {
     if (err) throw err;
     console.log('Connected to MongoDB');
     const db = client.db(dbName);
@@ -84,7 +84,7 @@ app.post('/rest/maketicket', function (req, res) {
   // Report to console what was received (for debugging)
   console.log(newTicket);
 
-  MongoClient.connect(url, function (err, client) {
+  MongoClient.connect(uri, function (err, client) {
     if (err) throw err;
     console.log('Connected to MongoDB');
     const db = client.db(dbName);
@@ -110,7 +110,7 @@ app.put('/rest/ticket/:id', function (req, res) {
   console.log("Updating ticket with ID: " + inputId);
   console.log(updatedTicket);
 
-  MongoClient.connect(url, function (err, client) {
+  MongoClient.connect(uri, function (err, client) {
     if (err) throw err;
     console.log('Connected to MongoDB');
     const db = client.db(dbName);
@@ -138,7 +138,7 @@ app.delete('/rest/ticket/:id', function (req, res) {
   const inputId = Number(req.params.id);
   console.log("Deleting ticket with ID: " + inputId);
 
-  MongoClient.connect(url, function (err, client) {
+  MongoClient.connect(uri, function (err, client) {
     if (err) throw err;
     console.log('Connected to MongoDB');
     const db = client.db(dbName);
