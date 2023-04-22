@@ -93,6 +93,16 @@ app.post('/rest/ticket', async (req, res) => {
     ticket.id = Date.now(); // Assign a unique id
     ticket.created_at = new Date(); // Set created_at field
     ticket.updated_at = new Date(); // Set updated_at field
+    ticket.type = req.body.type; // Set type field
+    ticket.subject = req.body.subject; // Set subject field
+    ticket.description = req.body.description; // Set description field
+    ticket.priority = req.body.priority; // Set priority field
+    ticket.status = req.body.status; // Set status field
+    ticket.recipient = req.body.recipient; // Set recipient field
+    ticket.submitter = req.body.submitter; // Set submitter field
+    ticket.assignee_id = req.body.assignee_id; // Set assignee_id field
+    ticket.followers_ids = req.body.followers_ids; // Set followers_ids field
+
 
     // Confirm that ticket is an object
     if (typeof ticket === 'object' && !Array.isArray(ticket)) {
