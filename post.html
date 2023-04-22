@@ -1,26 +1,52 @@
 <html>
-   <head>
-      <title>Tickets Form</title>
-   </head>
+<head>
+  <title>Tickets Form</title>
+  <script>
+    // Function to serialize form data as JSON
+    function serializeFormData(form) {
+      const formData = new FormData(form);
+      const jsonObject = {};
+      for (const [key, value] of formData.entries()) {
+        jsonObject[key] = value;
+      }
+      return JSON.stringify(jsonObject);
+    }
 
-   <body style = "font-family: arial, sans-serif" 
-      style = "background-color: #E6E6FA">
-	
-	<form action="./rest/ticket" method=POST>
-	ID: <input type=text name=id value="id" ><br>
-	created_at: <input type=text name="created_at" ><br>
-	updated_at: <input type=text name="updated_at" ><br>
-	type: <input type=text name="type" ><br>
-	subject: <input type=text name="subject" ><br>
-	description: <input type=text name="description" ><br>
-	priority: <input type=text name="priority" ><br>
-	status: <input type=text name="status" ><br>
-	recipient: <input type=text name="recipient" ><br>
-	submitter: <input type=text name="submitter" ><br>
-	assignee_id: <input type=text name="assignee_id" ><br>
-	follower_ids: <input type=text name="follower_ids" ><br>
-	<input type=submit name="submit" value="Send"><p>
-	</form>
-
-   </body>
+    // Function to submit form data as JSON
+    function submitForm() {
+      const form = document.getElementById("ticketForm");
+      const formDataJson = serializeFormData(form);
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "./rest/ticket", true);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            console.log("Form submitted successfully");
+          } else {
+            console.error("Error submitting form:", xhr.responseText);
+          }
+        }
+      };
+      xhr.send(formDataJson);
+    }
+  </script>
+</head>
+<body style="font-family: arial, sans-serif" style="background-color: #E6E6FA">
+  <form id="ticketForm" onsubmit="event.preventDefault(); submitForm();">
+    ID: <input type="text" name="id" value="id"><br>
+    created_at: <input type="text" name="created_at"><br>
+    updated_at: <input type="text" name="updated_at"><br>
+    type: <input type="text" name="type"><br>
+    subject: <input type="text" name="subject"><br>
+    description: <input type="text" name="description"><br>
+    priority: <input type="text" name="priority"><br>
+    status: <input type="text" name="status"><br>
+    recipient: <input type="text" name="recipient"><br>
+    submitter: <input type="text" name="submitter"><br>
+    assignee_id: <input type="text" name="assignee_id"><br>
+    follower_ids: <input type="text" name="follower_ids"><br>
+    <input type="submit" name="submit" value="Send"><p>
+  </form>
+</body>
 </html>
