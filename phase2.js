@@ -107,42 +107,46 @@ app.get('/rest/ticket/:id', async (req, res) => {
 
 // Define a route for creating a new ticket
 app.post('/rest/ticket', async (req, res) => {
-  // Extract the fields from the request body
-  const { type, subject, description, priority, status, recipient, submitter, assignee_id, followers_ids } = req.body;
-
-  // Confirm that all the required fields are present
-  if (type && subject && description && priority && status && recipient && submitter && assignee_id && followers_ids) {
+  // Confirm that req.body is an object
+  if (typeof req.body === 'object' && !Array.isArray(req.body)) {
     const ticket = {
       id: Date.now(), // Assign a unique id
       created_at: new Date(), // Set created_at field
       updated_at: new Date(), // Set updated_at field
-      type, // Set type field
-      subject, // Set subject field
-      description, // Set description field
-      priority, // Set priority field
-      status, // Set status field
-      recipient, // Set recipient field
-      submitter, // Set submitter field
-      assignee_id, // Set assignee_id field
-      followers_ids // Set followers_ids field
+      type: req.body.type, // Set type field
+      subject: req.body.subject, // Set subject field
+      description: req.body.description, // Set description field
+      priority: req.body.priority, // Set priority field
+      status: req.body.status, // Set status field
+      recipient: req.body.recipient, // Set recipient field
+      submitter: req.body.submitter, // Set submitter field
+      assignee_id: req.body.assignee_id, // Set assignee_id field
+      followers_ids: req.body.followers_ids, // Set followers_ids field
     };
 
-    const tickets = client.db('Phase-ll').collection('CMPS415');
-    await tickets.insertOne(ticket);
-    console.log(`Created ticket with id ${ticket.id}`);
+    // Confirm that ticket is an object
+    if (typeof ticket === 'object' && !Array.isArray(ticket)) {
+      const tickets = client.db('Phase-ll').collection('CMPS415');
+      await tickets.insertOne(ticket);
+      console.log(`Created ticket with id ${ticket.id}`);
 
-    // Extract the required fields from the created ticket
-    const { id, created_at, updated_at } = ticket;
+      // Extract the required fields from the created ticket
+      const { id, created_at, updated_at, type, subject, description, priority, status, recipient, submitter, assignee_id, followers_ids } = ticket;
 
-    // Create a response object with the required fields
-    const response = { id, created_at, updated_at, type, subject, description, priority, status, recipient, submitter, assignee_id, followers_ids };
+      // Create a response object with the required fields
+      const response = { id, created_at, updated_at, type, subject, description, priority, status, recipient, submitter, assignee_id, followers_ids };
 
-    res.send(response);
+      res.send(response);
+    } else {
+      console.log('Ticket data is not a valid object');
+      res.status(400).send('Ticket data is not a valid object');
+    }
   } else {
-    console.log('Required fields are missing from the request body');
-    res.status(400).send('Required fields are missing from the request body');
+    console.log('Request body is not a valid object');
+    res.status(400).send('Request body is not a valid object');
   }
 });
+
 
 
 
