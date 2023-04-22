@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 const MongoClient = require('mongodb').MongoClient;
-const url = 'mongodb://localhost:27017';
-const dbName = 'mydb';
+const uri = 'mongodb+srv://dellesheoniadixon2:k9UyT796OyDNGNlB@ddixonmdb.05vfedo.mongodb.net/?retryWrites=true&w=majority';
+const dbName = 'Phase-ll';
 
 app.listen(port);
 console.log('Server started at port:' + port);
@@ -101,4 +101,65 @@ app.post('/rest/maketicket', function (req, res) {
     });
   });
 });
+
+// A PUT request to update a specific ticket (id) in MongoDB
+app.put('/rest/ticket/:id', function (req, res) {
+  const inputId = Number(req.params.id);
+  const updatedTicket = req.body;
+  console.log("Updating ticket with ID: " + inputId);
+  console.log(updatedTicket);
+
+  MongoClient.connect(url, function (err, client) {
+    if (err) throw err;
+    console.log('Connected to MongoDB');
+    const db = client.db(dbName);
+    const ticketsCollection = db.collection('tickets');
+
+    ticketsCollection.findOneAndUpdate({ id: inputId }, { $set: updatedTicket }, { returnOriginal: false }, function (err, ticket) {
+      if (err) {
+        return res.status(500).json({
+          error: "Error updating ticket in MongoDB!"
+        });
+      } else {
+        if (!ticket.value) {
+          res.status(404).send("Ticket does not exist!");
+        } else {
+          console.log("Ticket updated!")
+          res.status(200).json(ticket.value);
+        }
+      }
+      client.close();
+    });
+  });
+});
+
+app.delete('/rest/ticket/:id', function (req, res) {
+  const inputId = Number(req.params.id);
+  console.log("Deleting ticket with ID: " + inputId);
+
+  MongoClient.connect(url, function (err, client) {
+    if (err) throw err;
+    console.log('Connected to MongoDB');
+    const db = client.db(dbName);
+    const ticketsCollection = db.collection('tickets');
+
+    ticketsCollection.findOneAndDelete({ id: inputId }, function (err, ticket) {
+      if (err) {
+        return res.status(500).json({
+          error: "Error deleting ticket from MongoDB!"
+        });
+      } else {
+        if (!ticket.value) {
+          res.status(404).send("Ticket does not exist!");
+        } else {
+          console.log("Ticket deleted!")
+          res.status(204).send();
+        }
+      }
+      client.close();
+    });
+  });
+});
+
+
 
