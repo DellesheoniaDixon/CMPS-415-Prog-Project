@@ -28,6 +28,6 @@ Summary of Deliverables
 Node Web Service using Node that offers 5 endpoints.
 • DELETE - /rest/ticket/id = "Deletes a ticket record by ID"
 • PUT - /rest/ticket/id = "Updates existing ticket record based on ID"
-![image](https://user-images.githubusercontent.com/89437977/233754098-5e5c2b29-eb77-4da5-ac95-1d8283b8c9ca.png)
+
 
 
