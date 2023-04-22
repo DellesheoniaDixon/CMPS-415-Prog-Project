@@ -26,6 +26,19 @@ app.use(bodyParser.json());
 // Serve static files from the "public" directory
 app.use(express.static('public'));
 
+
+// Route to serve the HTML form for adding a new ticket
+app.get('/form', (req, res) => {
+  fs.readFile('./post.html', 'utf8', (err, data) => {
+    if (err) {
+      console.error('Failed to read file:', err);
+      res.status(500).send('Failed to read file');
+    } else {
+      res.send(data);
+    }
+  });
+});
+
 // Endpoint to get all tickets
 app.get('/rest/list', async (req, res) => {
   const tickets = client.db('Phase-ll').collection('CMPS415');
