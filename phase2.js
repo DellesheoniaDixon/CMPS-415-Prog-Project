@@ -62,19 +62,51 @@ app.get('/rest/ticket/:id', async (req, res) => {
   }
 });
 
+// // Define a route for creating a new ticket
+// app.post('/rest/ticket', async (req, res) => {
+//   // Confirm that req.body is an object
+//   if (typeof req.body === 'object' && !Array.isArray(req.body)) {
+//     const ticket = req.body;
+//     ticket.id = Date.now(); // Assign a unique id
+
+//     // Confirm that ticket is an object
+//     if (typeof ticket === 'object' && !Array.isArray(ticket)) {
+//       const tickets = client.db('Phase-ll').collection('CMPS415');
+//       await tickets.insertOne(ticket);
+//       console.log(`Created ticket with id ${ticket.id}`);
+//       res.send(ticket);
+//     } else {
+//       console.log('Ticket data is not a valid object');
+//       res.status(400).send('Ticket data is not a valid object');
+//     }
+//   } else {
+//     console.log('Request body is not a valid object');
+//     res.status(400).send('Request body is not a valid object');
+//   }
+// });
+
 // Define a route for creating a new ticket
 app.post('/rest/ticket', async (req, res) => {
   // Confirm that req.body is an object
   if (typeof req.body === 'object' && !Array.isArray(req.body)) {
     const ticket = req.body;
     ticket.id = Date.now(); // Assign a unique id
+    ticket.created_at = new Date(); // Set created_at field
+    ticket.updated_at = new Date(); // Set updated_at field
 
     // Confirm that ticket is an object
     if (typeof ticket === 'object' && !Array.isArray(ticket)) {
       const tickets = client.db('Phase-ll').collection('CMPS415');
       await tickets.insertOne(ticket);
       console.log(`Created ticket with id ${ticket.id}`);
-      res.send(ticket);
+
+      // Extract the required fields from the created ticket
+      const { id, created_at, updated_at, type, subject, description, priority, status, recipient, submitter, assignee_id, followers_ids } = ticket;
+
+      // Create a response object with the required fields
+      const response = { id, created_at, updated_at, type, subject, description, priority, status, recipient, submitter, assignee_id, followers_ids };
+
+      res.send(response);
     } else {
       console.log('Ticket data is not a valid object');
       res.status(400).send('Ticket data is not a valid object');
@@ -84,6 +116,8 @@ app.post('/rest/ticket', async (req, res) => {
     res.status(400).send('Request body is not a valid object');
   }
 });
+
+
 
 //Define a route to update a ticket
 app.put('/rest/ticket/:id', async (req, res) => {
