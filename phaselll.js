@@ -200,6 +200,12 @@ app.delete('/rest/ticket/:id', async (req, res) => {
   }
 });
 
+app.get('/', function(req, res) {
+  const myquery = req.query;
+  var ticket = 'Welcome To The Ticket Home Page!';
+  res.send(ticket);
+});
+
 
 // Start the server
 app.listen(PORT, () => {
