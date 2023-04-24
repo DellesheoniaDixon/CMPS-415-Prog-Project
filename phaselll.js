@@ -25,10 +25,11 @@ connect();
 // Middleware to parse request body as JSON
 app.use(bodyParser.json());
 
+// Middleware for parsing XML data
+app.use(express.text({ type: 'application/xml' }));
+
 // Serve static files from the "public" directory
 app.use(express.static('public'));
-
-
 
 
 // Route to serve the HTML form for adding a new ticket
@@ -78,15 +79,17 @@ app.put('/rest/xml/ticket/:id', async (req, res) => {
     const xmlParser = new xml2js.Parser();
     const ticket = await xmlParser.parseStringPromise(xml);
 
-    // Call the existing /rest/ticket/id endpoint to add ticket information as JSON
-    await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, ticket);
+    // Call the existing /rest/ticket/:id endpoint to add ticket information as JSON
+    await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, ticket.data);
 
     res.send('Ticket added successfully');
   } catch (error) {
     // Handle errors
+    console.error(error);
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 
 // Endpoint to get all tickets
