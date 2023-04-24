@@ -80,7 +80,11 @@ app.put('/rest/xml/ticket/:id', async (req, res) => {
     const ticket = await xmlParser.parseStringPromise(xml);
 
     // Call the existing /rest/ticket/:id endpoint to add ticket information as JSON
-    await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, ticket.data);
+    const jsonData = JSON.stringify(ticket.data);
+    const headers = {
+      'Content-Type': 'application/xml', // Set Content-Type header to application/xml
+    };
+    await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, jsonData, { headers });
 
     res.send('Ticket added successfully');
   } catch (error) {
@@ -89,6 +93,7 @@ app.put('/rest/xml/ticket/:id', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 
 
