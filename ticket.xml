@@ -1,0 +1,21 @@
+<ticket>
+  <id>123</id>
+  <created_at>2022-04-27T12:00:00Z</created_at>
+  <updated_at>2022-04-27T12:00:00Z</updated_at>
+  <type>incident</type>
+  <subject>My printer is not working</subject>
+  <description>There is an error message on the screen</description>
+  <priority>high</priority>
+  <status>open</status>
+  <recipient>support@example.com</recipient>
+  <submitter>jane.doe@example.com</submitter>
+  <assignee_id>1234</assignee_id>
+  <follower_ids>
+    <follower_id>2345</follower_id>
+    <follower_id>3456</follower_id>
+  </follower_ids>
+  <tags>
+    <tag>printer</tag>
+    <tag>error</tag>
+  </tags>
+</ticket>
