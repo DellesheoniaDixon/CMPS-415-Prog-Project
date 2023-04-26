@@ -70,37 +70,48 @@ app.get('/rest/xml/ticket/:id', async (req, res) => {
 });
 
 const xml2js = require('xml2js');
-
-// Define a route for adding a ticket as an XML document
 app.put('/rest/xml/ticket/:id', async (req, res) => {
   try {
     const ticketId = req.params.id;
-    const jsonData = req.body;
+    const xml = req.body;
 
-    // Convert JSON data to XML
-    const xmlBuilder = new xml2js.Builder();
-    const xml = xmlBuilder.buildObject(jsonData);
-    
-     // Convert XML document to JSON
+    // Convert XML document to JSON
     const xmlParser = new xml2js.Parser();
     const ticket = await xmlParser.parseStringPromise(xml);
+
+    // Map XML fields to MongoDB fields
+    const ticketData = {
+      _id: ticket.id[0],
+      createdAt: new Date(ticket.created_at[0]),
+      updatedAt: new Date(ticket.updated_at[0]),
+      type: ticket.type[0],
+      subject: ticket.subject[0],
+      description: ticket.description[0],
+      priority: ticket.priority[0],
+      status: ticket.status[0],
+      recipient: ticket.recipient[0],
+      submitter: ticket.submitter[0],
+      assigneeId: ticket.assignee_id[0],
+      followerIds: ticket.follower_ids[0].follower_id,
+      tags: ticket.tags[0].tag
+    };
+
+    // Add ticket to MongoDB
+    const Ticket = mongoose.model('Ticket', ticketSchema);
+    const newTicket = new Ticket(ticketData);
+    await newTicket.save();
 
     // Call the existing /rest/ticket/:id endpoint to add ticket information as XML
     await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, xml, {
       headers: { 'Content-Type': 'application/xml' } // Set content type as XML
     });
-    
-     // Call the existing /rest/ticket/:id endpoint to add ticket information as JSON
-    const response = await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, ticket);
 
     res.send('Ticket added successfully');
   } catch (error) {
     // Handle errors
-    console.error(error);
     res.status(500).send('Internal Server Error');
   }
 });
-
 
 
 
