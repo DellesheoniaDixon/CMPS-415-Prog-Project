@@ -80,11 +80,18 @@ app.put('/rest/xml/ticket/:id', async (req, res) => {
     // Convert JSON data to XML
     const xmlBuilder = new xml2js.Builder();
     const xml = xmlBuilder.buildObject(jsonData);
+    
+     // Convert XML document to JSON
+    const xmlParser = new xml2js.Parser();
+    const ticket = await xmlParser.parseStringPromise(xml);
 
     // Call the existing /rest/ticket/:id endpoint to add ticket information as XML
     await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, xml, {
       headers: { 'Content-Type': 'application/xml' } // Set content type as XML
     });
+    
+     // Call the existing /rest/ticket/:id endpoint to add ticket information as JSON
+    const response = await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, ticket);
 
     res.send('Ticket added successfully');
   } catch (error) {
