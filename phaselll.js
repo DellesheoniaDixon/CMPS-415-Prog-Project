@@ -59,7 +59,6 @@ app.get('/', function(req, res) {
           res.write(contents + "<br>");
       }
       res.send(ticket);
-      res.end();
     });
 });
 
