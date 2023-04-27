@@ -3,7 +3,8 @@ const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
 const app = express();
-// const xml2js = require('xml2js');
+const xml2js = require('xml2js');
+const { parseStringPromise } = require('xml2js');
 const axios = require('axios');
 const PORT = process.env.PORT || 3000;
 
@@ -69,50 +70,22 @@ app.get('/rest/xml/ticket/:id', async (req, res) => {
   }
 });
 
-const xml2js = require('xml2js');
+// Define PUT - /rest/xml/ticket/:id endpoint
 app.put('/rest/xml/ticket/:id', async (req, res) => {
   try {
-    const ticketId = req.params.id;
     const xml = req.body;
+    const json = await parseStringPromise(xml, { explicitArray: false });
+    const ticketId = req.params.id;
 
-    // Convert XML document to JSON
-    const xmlParser = new xml2js.Parser();
-    const ticket = await xmlParser.parseStringPromise(xml);
+    // Make request to /rest/ticket/:id endpoint with ticket information in JSON format
+    const response = await axios.put(`http://localhost:3000/rest/ticket/${ticketId}`, json);
 
-    // Map XML fields to MongoDB fields
-    const ticketData = {
-      _id: ticket.id[0],
-      createdAt: new Date(ticket.created_at[0]),
-      updatedAt: new Date(ticket.updated_at[0]),
-      type: ticket.type[0],
-      subject: ticket.subject[0],
-      description: ticket.description[0],
-      priority: ticket.priority[0],
-      status: ticket.status[0],
-      recipient: ticket.recipient[0],
-      submitter: ticket.submitter[0],
-      assigneeId: ticket.assignee_id[0],
-      followerIds: ticket.follower_ids[0].follower_id,
-      tags: ticket.tags[0].tag
-    };
-
-    // Add ticket to MongoDB
-    const Ticket = mongoose.model('Ticket', ticketSchema);
-    const newTicket = new Ticket(ticketData);
-    await newTicket.save();
-
-    // Call the existing /rest/ticket/:id endpoint to add ticket information as XML
-    await axios.put(`http://localhost:${PORT}/rest/ticket/${ticketId}`, xml, {
-      headers: { 'Content-Type': 'application/xml' } // Set content type as XML
-    });
-
-    res.send('Ticket added successfully');
+    res.send(response.data);
   } catch (error) {
-    // Handle errors
-    res.status(500).send('Internal Server Error');
+    console.error(error);
+    res.status(500).send(error.message);
   }
 });
-
 
 
 // Endpoint to get all tickets
