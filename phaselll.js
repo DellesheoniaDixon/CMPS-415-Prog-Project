@@ -4,6 +4,7 @@ const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
 const app = express();
 const xml2js = require('xml2js');
+const { parseStringPromise } = require('xml2js');
 const axios = require('axios');
 const PORT = process.env.PORT || 3000;
 
@@ -69,6 +70,22 @@ app.get('/rest/xml/ticket/:id', async (req, res) => {
   }
 });
 
+// Define PUT - /rest/xml/ticket/:id endpoint
+app.put('/rest/xml/ticket/:id', async (req, res) => {
+  try {
+    const xml = req.body;
+    const json = await parseStringPromise(xml, { explicitArray: false });
+    const ticketId = req.params.id;
+
+    // Make request to /rest/ticket/:id endpoint with ticket information in JSON format
+    const response = await axios.put(`http://localhost:3000/rest/ticket/${ticketId}`, json);
+
+    res.send(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error.message);
+  }
+});
 
 
 // Endpoint to get all tickets
