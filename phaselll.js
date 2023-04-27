@@ -33,6 +33,7 @@ app.use(express.text({ type: 'application/xml' }));
 app.use(express.static('public'));
 
 
+
 // Route to serve the HTML form for adding a new ticket
 app.get('/postform', (req, res) => {
   fs.readFile('./post.html', 'utf8', (err, data) => {
@@ -45,8 +46,10 @@ app.get('/postform', (req, res) => {
   });
 });
 
-app.get('/menu', function(req, res) {
+app.get('/', function(req, res) {
     res.setHeader('Content-Type', 'text/html');
+    const myquery = req.query;
+    var ticket = 'Welcome To The Ticket Home Page!';
     fs.readFile('./menu.html', 'utf8', (err, contents) => {
       if(err) {
           console.log('Form file Read Error', err);
@@ -55,6 +58,7 @@ app.get('/menu', function(req, res) {
           console.log('Form loaded\n');
           res.write(contents + "<br>");
       }
+      res.send(ticket);
       res.end();
     });
 });
@@ -222,12 +226,6 @@ app.delete('/rest/ticket/:id', async (req, res) => {
     console.log(`Ticket with id ${ticketId} not found`);
     res.status(404).send(`Ticket with id ${ticketId} not found`);
   }
-});
-
-app.get('/', function(req, res) {
-  const myquery = req.query;
-  var ticket = 'Welcome To The Ticket Home Page!';
-  res.send(ticket);
 });
 
 
