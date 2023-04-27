@@ -48,67 +48,50 @@
 		 }
 	  </style>
 
-<form id="ticketForm">
-  ID: <input type="text" name="id" id="id"><br>
-  created_at: <input type="text" name="created_at" id="created_at"><br>
-  updated_at: <input type="text" name="updated_at" id="updated_at"><br>
-  type: <input type="text" name="type" id="type"><br>
-  subject: <input type="text" name="subject" id="subject"><br>
-  description: <input type="text" name="description" id="description"><br>
-  priority: <input type="text" name="priority" id="priority"><br>
-  status: <input type="text" name="status" id="status"><br>
-  recipient: <input type="text" name="recipient" id="recipient"><br>
-  submitter: <input type="text" name="submitter" id="submitter"><br>
-  assignee_id: <input type="text" name="assignee_id" id="assignee_id"><br>
-  followers_ids: <input type="text" name="followers_ids" id="followers_ids"><br>
-  <input type="submit" name="submit" value="Send"><p>
-</form>
+      <form id="ticketForm">
+         ID: <input type="text" name="id" id="id"><br>
+         created_at: <input type="text" name="created_at" id="created_at"><br>
+         updated_at: <input type="text" name="updated_at" id="updated_at"><br>
+         type: <input type="text" name="type" id="type"><br>
+         subject: <input type="text" name="subject" id="subject"><br>
+         description: <input type="text" name="description" id="description"><br>
+         priority: <input type="text" name="priority" id="priority"><br>
+         status: <input type="text" name="status" id="status"><br>
+         recipient: <input type="text" name="recipient" id="recipient"><br>
+         submitter: <input type="text" name="submitter" id="submitter"><br>
+         assignee_id: <input type="text" name="assignee_id" id="assignee_id"><br>
+         followers_ids: <input type="text" name="followers_ids" id="followers_ids"><br>
+         <input type="submit" name="submit" value="Send"><p>
+      </form>
+      <script>
+         document.getElementById("ticketForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
 
-<script>
-  document.getElementById("ticketForm").addEventListener("submit", async function(event) {
-    event.preventDefault();
+            // Convert form data to JSON object
+            const formData = new FormData(event.target);
+            const ticket = {};
+            for (const [key, value] of formData.entries()) {
+               ticket[key] = value;
+            }
 
-    // Convert form data to JSON object
-    const formData = new FormData(event.target);
-    const ticket = {};
-    for (const [key, value] of formData.entries()) {
-      ticket[key] = value;
-    }
+            // Send POST request to server with JSON body
+            const response = await fetch("/rest/ticket", {
+               method: "POST",
+               body: JSON.stringify({ body: ticket }),
+               headers: {
+                  "Content-Type": "application/json"
+               }
+            });
 
-    // Use the ID entered by the user instead of a randomly generated ID
-    const id = document.getElementById("id").value.trim();
-    if (id !== "") {
-      ticket.id = id;
-    }
-
-    // Determine whether to send POST or PUT request based on the presence of an ID
-    const method = ticket.id ? "PUT" : "POST";
-    const url = ticket.id ? `/rest/ticket/${ticket.id}` : "/rest/ticket";
-
-    // Send request to server with JSON body
-    const response = await fetch(url, {
-      method: method,
-      body: JSON.stringify({ body: ticket }),
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
-
-    // Handle response
-    if (response.ok) {
-      const data = await response.json();
-      if (method === "PUT") {
-        console.log("Ticket updated successfully:", data);
-      } else {
-        console.log("Ticket created successfully:", data);
-      }
-    } else {
-      console.error("Failed to create/update ticket:", response.statusText);
-    }
-  });
-</script>
-
-
+            // Handle response
+            if (response.ok) {
+               const data = await response.json();
+               console.log("Ticket created successfully:", data);
+            } else {
+               console.error("Failed to create ticket:", response.statusText);
+            }
+         });
+      </script>
    </body>
 </html>
 
