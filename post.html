@@ -82,6 +82,15 @@
                   "Content-Type": "application/json"
                }
             });
+		 
+	   // Send PUT request to server with JSON body
+               const response = await fetch(`/rest/ticket/${ticket.id}`, {
+                  method: "PUT",
+                  body: JSON.stringify({ body: ticket }),
+                  headers: {
+                     "Content-Type": "application/json"
+                  }
+               });
 
             // Handle response
             if (response.ok) {
