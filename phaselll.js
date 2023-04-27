@@ -48,8 +48,6 @@ app.get('/postform', (req, res) => {
 
 app.get('/', function(req, res) {
     res.setHeader('Content-Type', 'text/html');
-    const myquery = req.query;
-    var ticket = 'Welcome To The Ticket Home Page!';
     fs.readFile('./menu.html', 'utf8', (err, contents) => {
       if(err) {
           console.log('Form file Read Error', err);
@@ -58,7 +56,7 @@ app.get('/', function(req, res) {
           console.log('Form loaded\n');
           res.write(contents + "<br>");
       }
-      res.send(ticket);
+      res.end;
     });
 });
 
