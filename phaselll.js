@@ -45,6 +45,34 @@ app.get('/form', (req, res) => {
   });
 });
 
+app.get('/menu', function(req, res) {
+    res.setHeader('Content-Type', 'text/html');
+    fs.readFile('./menu.html', 'utf8', (err, contents) => {
+      if(err) {
+          console.log('Form file Read Error', err);
+          res.write("<p>Form file Read Error");
+      } else {
+          console.log('Form loaded\n');
+          res.write(contents + "<br>");
+      }
+      res.end();
+    });
+});
+
+app.get('/putform', function(req, res) {
+    res.setHeader('Content-Type', 'text/html');
+    fs.readFile('./put.html', 'utf8', (err, contents) => {
+      if(err) {
+          console.log('Form file Read Error', err);
+          res.write("<p>Form file Read Error");
+      } else {
+          console.log('Form loaded\n');
+          res.write(contents + "<br>");
+      }
+      res.end();
+    });
+  });
+
 
 // Define a route for retrieving a ticket by id as an XML document
 app.get('/rest/xml/ticket/:id', async (req, res) => {
