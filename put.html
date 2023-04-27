@@ -75,33 +75,34 @@
       </form>
 	       
       <script>
-         document.getElementById("ticketForm").addEventListener("submit", async function(event) {
-            event.preventDefault();
+	      document.getElementById("ticketForm").addEventListener("submit", async function(event) {
+		      event.preventDefault();
 
-           // Convert form data to JSON object
-               const formData = new FormData(event.target);
-               const ticket = {};
-               for (const [key, value] of formData.entries()) {
-                  ticket[key] = value;
-               }
+    // Convert form data to JSON object
+    const formData = new FormData(event.target);
+    const ticket = {};
+    for (const [key, value] of formData.entries()) {
+      ticket[key] = value;
+    }
 
-               // Send PUT request to server with JSON body
-		const response = await fetch(`/rest/ticket/${ticket.id}`, {
-			method: "PUT",
-			body: JSON.stringify(ticket), // send the JSON object directly
-			headers: {
-				"Content-Type": "application/json"
-			}
-		});
+    // Send PUT request to server with JSON body
+    const response = await fetch(`/rest/ticket/${ticket.id}`, {
+      method: "PUT",
+      body: JSON.stringify(ticket), // send the JSON object directly
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
 
-            // Handle response
-            if (response.ok) {
-               const data = await response.json();
-               console.log("Ticket created successfully:", data);
-            } else {
-               console.error("Failed to create ticket:", response.statusText);
-            }
-         });
-      </script>
+    // Handle response
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Ticket created successfully:", data);
+    } else {
+      console.error("Failed to create ticket:", response.statusText);
+    }
+  });
+</script>
+
    </body>
 </html>
