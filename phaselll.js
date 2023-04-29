@@ -1,11 +1,11 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const fetch = require('node-fetch');
+const js2xmlparser = require('js2xmlparser');
+const bodyParser = require('express-xml-bodyparser');
+const request = require('request');
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
 const app = express();
-const xml2js = require('xml2js');
-const { parseStringPromise } = require('xml2js');
-const axios = require('axios');
 const PORT = process.env.PORT || 3000;
 
 // Connection URL and database name
@@ -74,19 +74,17 @@ app.get('/putform', function(req, res) {
     });
   });
 
-
 // Define a route for retrieving a ticket by id as an XML document
-app.get('/rest/xml/ticket/:id', async (req, res) => {
+app.get('/xml/ticket/:id', async (req, res) => {
   try {
     const ticketId = req.params.id;
 
     // Call the existing /rest/ticket/id endpoint to get ticket information as JSON
-    const response = await axios.get(`http://localhost:${PORT}/rest/ticket/${ticketId}`);
-    const ticket = response.data;
+    const response = await fetch(`http://localhost:${PORT}/rest/ticket/${ticketId}`);
+    const ticket = await response.json();
 
     // Convert ticket information from JSON to XML
-    const xmlBuilder = new xml2js.Builder();
-    const xml = xmlBuilder.buildObject(ticket);
+    const xml = js2xmlparser.parse('ticket', ticket);
 
     // Set response header to indicate XML content
     res.set('Content-Type', 'application/xml');
@@ -99,17 +97,24 @@ app.get('/rest/xml/ticket/:id', async (req, res) => {
   }
 });
 
-// Define PUT - /rest/xml/ticket/:id endpoint
-app.put('/rest/xml/ticket/:id', async (req, res) => {
+// Define PUT - /xml/ticket/:id endpoint
+app.put('/xml/ticket/:id', bodyParser({type: 'application/xml'}), async (req, res) => {
   try {
-    const xml = req.body;
-    const json = await parseStringPromise(xml, { explicitArray: false });
+    const json = req.body;
     const ticketId = req.params.id;
 
     // Make request to /rest/ticket/:id endpoint with ticket information in JSON format
-    const response = await axios.put(`http://localhost:3000/rest/ticket/${ticketId}`, json);
-
-    res.send(response.data);
+    request.put({
+      url: `http://localhost:${PORT}/rest/ticket/${ticketId}`,
+      json: json
+    }, (error, response, body) => {
+      if (error) {
+        console.error(error);
+        res.status(500).send(error.message);
+      } else {
+        res.send(body);
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send(error.message);
